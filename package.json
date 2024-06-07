@@ -6,13 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "createDatabase": "node -r dotenv/config ./scripts/createDatabase.js",
+    "seedDatabase": "node -r dotenv/config ./scripts/seed.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.0.4",
+    "@vercel/postgres": "^0.8.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
     "next": "14.2.3",
+    "next-auth": "^5.0.0-beta.19",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
