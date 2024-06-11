@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "createDatabase": "node -r dotenv/config ./scripts/createDatabase.js",
     "seedDatabase": "node -r dotenv/config ./scripts/seed.js"
   },
   "dependencies": {
