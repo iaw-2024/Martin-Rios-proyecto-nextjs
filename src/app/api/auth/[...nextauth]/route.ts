@@ -45,7 +45,6 @@ export const authOptions:NextAuthOptions={
           if (!user) return null;
 
           const passwordsMatch = await bcrypt.compare(password, user.password);
-          console.log(user)
           if (passwordsMatch) 
               return {
               id: user.id,
@@ -59,13 +58,11 @@ export const authOptions:NextAuthOptions={
   ],
   callbacks:{
     async redirect({url, baseUrl}){
-      console.log("url")
       return baseUrl
     },
     async session({ session, token, user }:any) {
       session.user.role = token.role
       session.user.id = token.id
-      console.log("invocacndo a la sesion del lado del servidor")
       return session;
     },
     async jwt({token, user}) {
