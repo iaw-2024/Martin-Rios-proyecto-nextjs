@@ -1,24 +1,30 @@
 'use client';
 
-import { Description, Field, Fieldset, Input, Label, Legend, Select, Textarea } from '@headlessui/react'
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { FormEvent } from 'react';
+
 import clsx from 'clsx'
 import Link from 'next/link';
 
-import { useFormState, useFormStatus } from 'react-dom';
-import { authenticate } from '@/app/lib/actions';
-
-import {
-  ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
-
 export default function LoginForm() {
 
-  const [errorMessage, dispatch] = useFormState(authenticate,undefined);
+  const router = useRouter();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const response = await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirect: true,
+    });
 
+    console.log({ response });
+  };
 
   return (
     <div className="w-full max-w-md px-4">
-      <form  action={dispatch} className="space-y-6 rounded-xl bg-white p-6 sm:p-10">
+      <form  onSubmit={handleSubmit} className="space-y-6 rounded-xl bg-white p-6 sm:p-10">
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-800">Login</h2>
           <p className="mt-2 text-sm text-gray-600">Bienvenido de nuevo! Por favor, ingresa tus datos para continuar comprando.</p>
@@ -59,18 +65,7 @@ export default function LoginForm() {
             Sign In
           </button>
         </div>
-        <div
-          className="flex h-8 items-end space-x-1"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {errorMessage && (
-            <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )}
-        </div>
+        
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
             ¿No tienes una cuenta? <Link href="/register" className="text-blue-600 hover:underline">Regístrate aquí</Link>
