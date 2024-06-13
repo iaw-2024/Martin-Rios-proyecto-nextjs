@@ -1,4 +1,3 @@
-@ -0,0 +1,68 @@
 import { QueryResult } from '@vercel/postgres';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../Entities';
