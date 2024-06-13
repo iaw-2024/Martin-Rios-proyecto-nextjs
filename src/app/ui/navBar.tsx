@@ -3,7 +3,7 @@ import Link from 'next/link';
 import AuthButton from './LogoutButton';
 import {  Session } from 'next-auth';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../api/auth/[...nextauth]/route';
+import { authOptions } from '../api/auth/[...nextauth]/auth-config';
 import LogoutButton from './LogoutButton';
 import LoginButton from './LoginButton';
 

@@ -1,26 +1,19 @@
-import { withAuth, NextRequestWithAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
+import { withAuth } from "next-auth/middleware";
 
-export default withAuth(
-    function middleware(request: NextRequestWithAuth) {
-        if (request.nextUrl.pathname.startsWith("/admin")
-            && request.nextauth.token?.role !== "admin") {
-            return NextResponse.rewrite(
-                new URL("/", request.url)
-            )
-        }
-        if (request.nextUrl.pathname.startsWith("/login")
-            && !!request.nextauth.token) {
-            return NextResponse.rewrite(
-                new URL("/", request.url)
-            )
-        }
+export default withAuth({
+    pages: {
+      signIn: '/login',
+      signOut: '/logout'
     },
-    {
-        callbacks: {
-            authorized: ({ token }) => !!token
-        },
-    }
-)
+    callbacks: {
+        authorized: ({ req, token }) => {
+            //TODO verificar bien el tema de la ruta, dentro del req estan las url
+            //también verificar el tema de las paginas de compra y demás
+            //console.log(req)
 
-export const config = { matcher: ["/login", "/admin"] }
+            return token?.user.role != 'admin'
+        }
+    }
+});
+
+export const config = { matcher: ["/admin", "/login"] }
