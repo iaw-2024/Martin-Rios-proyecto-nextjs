@@ -14,9 +14,9 @@ const carts = [
   { username: 'Bob Johnson', totalPrice: 0.00, mercadoPagoID: 'MP789012' }
 ];
 const products = [
-  { owner: 'Bob Johnson', productName: 'Laptop', description: 'A high-performance laptop.', imageURL: 'http://example.com/images/laptop.jpg', imageKey: 'laptop123', price: 999.99, publicationDate: new Date(), stock: 50 },
-  { owner: 'Bob Johnson', productName: 'Smartphone', description: 'Latest model smartphone.', imageURL: 'http://example.com/images/smartphone.jpg', imageKey: 'smartphone123', price: 699.99, publicationDate: new Date(), stock: 100 },
-  { owner: 'Bob Johnson', productName: 'Headphones', description: 'Noise-cancelling headphones.', imageURL: 'http://example.com/images/headphones.jpg', imageKey: 'headphones123', price: 199.99, publicationDate: new Date(), stock: 200 }
+  { owner: 'Bob Johnson', productName: 'Laptop', description: 'A high-performance laptop.', imageURL: 'https://fakeimg.pl/350x200/?text=Producto_1&font=lobster', imageKey: 'laptop123', price: 999.99, publicationDate: new Date(), stock: 50 },
+  { owner: 'Bob Johnson', productName: 'Smartphone', description: 'Latest model smartphone.', imageURL: 'https://fakeimg.pl/350x200/?text=Producto_2&font=lobster', imageKey: 'smartphone123', price: 699.99, publicationDate: new Date(), stock: 100 },
+  { owner: 'Bob Johnson', productName: 'Headphones', description: 'Noise-cancelling headphones.', imageURL: 'https://fakeimg.pl/350x200/?text=Producto_3&font=lobster', imageKey: 'headphones123', price: 199.99, publicationDate: new Date(), stock: 200 }
 ];
 const orderItems = [
   { cartID: 1, productID: 1, quantity: 1, productPrice: 999.99 },
@@ -101,28 +101,24 @@ async function seedProducts(client) {
     await client.query(`
       CREATE TABLE IF NOT EXISTS products (
         id SERIAL PRIMARY KEY,
-        ownerID UUID NOT NULL,
         productName VARCHAR(100) NOT NULL,
         description TEXT,
         imageURL VARCHAR(255),
         imageKey VARCHAR(100),
         price DECIMAL(10, 2) NOT NULL,
         publicationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        stock INT NOT NULL,
-        FOREIGN KEY (ownerID) REFERENCES users(id) ON DELETE CASCADE
+        stock INT NOT NULL
       );
     `);
 
     console.log(`Tabla "products" creada`);
 
     const insertedProducts = await Promise.all(products.map(async product => {
-        const user = await client.query('SELECT id FROM users WHERE name = $1', [product.owner]);
-        const userID = user.rows[0].id;
         return client.query(`
-            INSERT INTO products (productName, description, imageURL, imageKey, price, stock, ownerID)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO products (productName, description, imageURL, imageKey, price, stock)
+            VALUES ($1, $2, $3, $4, $5, $6)
             ON CONFLICT (id) DO NOTHING;
-        `, [product.productName, product.description, product.imageURL, product.imageKey, product.price, product.stock, userID]);
+        `, [product.productName, product.description, product.imageURL, product.imageKey, product.price, product.stock]);
     }));
 
     console.log(`Se han insertado ${insertedProducts.length} productos`);
