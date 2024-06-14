@@ -1,16 +1,6 @@
 import { sql } from '@vercel/postgres';
+import { Product } from '../Entities/Product';
 
-interface Product {
-  id: number;
-  ownerID: string;
-  productName: string;
-  description?: string;
-  imageURL?: string;
-  imageKey?: string;
-  price: number;
-  publicationDate: Date;
-  stock: number;
-}
 
 class ProductsRepository {
   async getProductById(productId: number): Promise<Product | undefined> {
