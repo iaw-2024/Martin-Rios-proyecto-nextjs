@@ -5,8 +5,13 @@ import { SideNavItem } from './types';
 export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: 'Productos',
-    path: '/',
+    path: '/admin',
     icon: <Icon icon="lucide:home" width="24" height="24" />,
+    submenu: true,
+    subMenuItems: [
+      { title: 'Todos', path: '/admin' },
+      { title: 'Agregar', path: '/admin/nuevo' }
+    ],
   },
   {
     title: 'Notificaciones',
