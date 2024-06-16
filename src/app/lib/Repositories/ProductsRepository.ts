@@ -72,7 +72,7 @@ class ProductsRepository {
 
   async getAllProducts(): Promise<Product[]> {
     try {
-      const query = await sql<Product>`SELECT * FROM products /* + SET NO_CACHE */`;
+      const query = await sql<Product>`SELECT * FROM products`;
       return query.rows;
     } catch (error) {
       console.error('Failed to fetch products:', error);

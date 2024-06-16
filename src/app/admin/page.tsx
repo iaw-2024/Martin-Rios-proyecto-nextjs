@@ -1,9 +1,10 @@
 import ProductsRepository from "../lib/Repositories/ProductsRepository";
-import ProductCard from "../ui/productCard";
+import ProductCard from "../ui/admin/productCard";
+import { unstable_noStore as noStore } from 'next/cache';
 export default async function LoginPage() {
+  noStore();
   const productsRepository = new ProductsRepository();
   const products = await productsRepository.getAllProducts();
-  console.log(products);
   
   return (
     <div className="container mx-auto px-4">
