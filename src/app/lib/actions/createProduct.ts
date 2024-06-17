@@ -1,6 +1,7 @@
 'use server';
 import { v2 as cloudinary,UploadApiResponse } from 'cloudinary';
 import ProductsRepository from '../Repositories/ProductsRepository';
+import { revalidatePath } from 'next/cache';
 
 cloudinary.config({
     cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -25,20 +26,19 @@ export async function createProduct(formData: FormData) {
                 resolve(result)
             }).end(buffer)
         })
-
         if(result!=undefined){
             const product = {
                 productName: String(formData.get('productName')),
                 description: String(formData.get('description')),
                 imageURL: result.url,
-                imageKey: "", 
+                imageKey: result.public_id, 
                 price: Number(formData.get('price')), 
                 stock: Number(formData.get('stock'))
             }
 
             await productsRepository.createProduct(product)
         }
-
+        revalidatePath("/")
         return { 
             success: true, 
         };
