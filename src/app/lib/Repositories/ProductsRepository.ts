@@ -38,7 +38,7 @@ class ProductsRepository {
   }
 
   async updateProduct(
-    productId: number, 
+    productId: string, 
     productName: string, 
     description: string, 
     imageURL: string, 
@@ -58,7 +58,7 @@ class ProductsRepository {
     }
   }
 
-  async deleteProduct(productId: number): Promise<void> {
+  async deleteProduct(productId: string): Promise<void> {
     try {
       await sql`
         DELETE FROM products 
