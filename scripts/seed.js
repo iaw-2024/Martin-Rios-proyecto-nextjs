@@ -18,11 +18,6 @@ const products = [
   { owner: 'Bob Johnson', productName: 'Smartphone', description: 'Latest model smartphone.', imageURL: 'https://fakeimg.pl/350x200/?text=Producto_2&font=lobster', imageKey: 'smartphone123', price: 699.99, publicationDate: new Date(), stock: 100 },
   { owner: 'Bob Johnson', productName: 'Headphones', description: 'Noise-cancelling headphones.', imageURL: 'https://fakeimg.pl/350x200/?text=Producto_3&font=lobster', imageKey: 'headphones123', price: 199.99, publicationDate: new Date(), stock: 200 }
 ];
-const orderItems = [
-  { cartID: 1, productID: 1, quantity: 1, productPrice: 999.99 },
-  { cartID: 2, productID: 3, quantity: 2, productPrice: 199.99 },
-  { cartID: 3, productID: 2, quantity: 1, productPrice: 699.99 }
-];
 
 async function seedUsers(client) {
   try {
@@ -66,7 +61,7 @@ async function seedCarts(client) {
     try {
       await client.query(`
         CREATE TABLE IF NOT EXISTS carts (
-          id SERIAL PRIMARY KEY,
+          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
           userID UUID NOT NULL,
           totalPrice DECIMAL(10, 2) NOT NULL,
           creationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -100,7 +95,7 @@ async function seedProducts(client) {
   try {
     await client.query(`
       CREATE TABLE IF NOT EXISTS products (
-        id SERIAL PRIMARY KEY,
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         productName VARCHAR(100) NOT NULL,
         description TEXT,
         imageURL VARCHAR(255),
@@ -130,39 +125,6 @@ async function seedProducts(client) {
   }
 }
 
-async function seedOrderItems(client) {
-  try {
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS orderItems (
-        id SERIAL PRIMARY KEY,
-        cartID INT NOT NULL,
-        productID INT NOT NULL,
-        dateAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        quantity INT NOT NULL,
-        productPrice DECIMAL(10, 2) NOT NULL,
-        FOREIGN KEY (cartID) REFERENCES carts(id) ON DELETE CASCADE,
-        FOREIGN KEY (productID) REFERENCES products(id) ON DELETE CASCADE
-      );
-    `);
-
-    console.log(`Tabla "orderItems" creada`);
-
-    const insertedOrderItems = await Promise.all(orderItems.map(orderItem => {
-      return client.query(`
-        INSERT INTO orderItems (cartID, productID, quantity, productPrice)
-        VALUES ($1, $2, $3, $4)
-        ON CONFLICT (id) DO NOTHING;
-      `, [orderItem.cartID, orderItem.productID, orderItem.quantity, orderItem.productPrice]);
-    }));
-
-    console.log(`Se han insertado ${insertedOrderItems.length} elementos de orden`);
-
-    return insertedOrderItems;
-  } catch (error)  {
-    console.error('Error al insertar elementos de orden:', error);
-throw error;
-}
-}
 
 async function main() {
 const client = await db.connect();
@@ -171,7 +133,6 @@ try {
     await seedUsers(client);
     await seedCarts(client);
     await seedProducts(client);
-    await seedOrderItems(client);
 } catch (error) {
     console.error('Error al seedear la base de datos:', error);
 } finally {
