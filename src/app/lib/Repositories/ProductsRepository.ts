@@ -80,6 +80,62 @@ class ProductsRepository {
     }
   }
 
+  async getAllProductsPaginated(
+    page: number,
+    pageSize: number
+  ): Promise<{products:Product[], total:number}> {
+    try {
+      const offset = (page - 1) * pageSize;
+  
+      const query = await sql<Product>
+        `SELECT * FROM products 
+        ORDER BY productName
+        LIMIT ${pageSize} OFFSET ${offset}`;
+
+      const totalQuery = await sql<{ count: number }>`
+      SELECT COUNT(*) as count FROM products`;
+      const total = totalQuery.rows[0].count;
+      
+      return {
+        products:query.rows,
+        total
+      }
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+      throw new Error('Failed to fetch products.');
+    }
+  }
+
+  async searchProductsByName(
+    productName: string,
+    page: number,
+    pageSize: number,
+  ): Promise<{products:Product[], total:number}> {
+    try {
+      const offset = (page - 1) * pageSize;
+  
+      // Query to get the total count of matching products
+      const totalQuery = await sql<{ count: number }>`
+        SELECT COUNT(*) as count FROM products WHERE productName ILIKE ${'%' + productName + '%'}
+      `;
+      const total = totalQuery.rows[0].count;
+  
+      // Query to get the paginated products
+      const query = await sql<Product>`
+        SELECT * FROM products
+        WHERE productName ILIKE ${'%' + productName + '%'}
+        ORDER BY productName
+        LIMIT ${pageSize} OFFSET ${offset}
+      `;
+      return {
+        products: query.rows,
+        total: total,
+      };
+    } catch (error) {
+      console.error(`Failed to fetch products with name matching "${productName}":`, error);
+      throw new Error(`Failed to fetch products with name matching "${productName}".`);
+    }
+  }
 
 }
 
