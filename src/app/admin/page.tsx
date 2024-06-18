@@ -16,7 +16,7 @@ export default async function LoginPage({
 }) {
   noStore();
 
-  const ITEMS_PER_PAGE= 3
+  const ITEMS_PER_PAGE= 6
 
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
