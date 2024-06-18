@@ -1,6 +1,6 @@
 import { QueryResult } from '@vercel/postgres';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../Entities';
+import { User } from '../Entities/User';
 import { sql } from '@vercel/postgres';
 
 class UsersRepository {

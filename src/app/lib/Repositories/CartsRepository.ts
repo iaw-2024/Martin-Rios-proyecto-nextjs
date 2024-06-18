@@ -2,7 +2,7 @@ import { sql } from '@vercel/postgres';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Cart {
-  id: number;
+  id: string;
   userID: string;
   totalPrice: number;
   creationDate: Date;
@@ -20,7 +20,7 @@ class CartsRepository {
     }
   }
 
-  async createCart(userID: string, totalPrice: number, mercadoPagoID?: string): Promise<number> {
+  async createCart(userID: string, totalPrice: number, mercadoPagoID?: string): Promise<string> {
     try {
       const query = await sql`
         INSERT INTO carts(userID, totalPrice, mercadoPagoID) 
@@ -34,7 +34,7 @@ class CartsRepository {
     }
   }
 
-  async updateCart(cartId: number, totalPrice: number, mercadoPagoID?: string): Promise<void> {
+  async updateCart(cartId: string, totalPrice: number, mercadoPagoID?: string): Promise<void> {
     try {
       await sql`
         UPDATE carts 

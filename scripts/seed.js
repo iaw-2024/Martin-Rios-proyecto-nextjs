@@ -16,7 +16,7 @@ const carts = [
 const products = [
   { owner: 'Bob Johnson', productName: 'Laptop', description: 'A high-performance laptop.', imageURL: 'http://example.com/images/laptop.jpg', imageKey: 'laptop123', price: 999.99, publicationDate: new Date(), stock: 50 },
   { owner: 'Bob Johnson', productName: 'Smartphone', description: 'Latest model smartphone.', imageURL: 'http://example.com/images/smartphone.jpg', imageKey: 'smartphone123', price: 699.99, publicationDate: new Date(), stock: 100 },
-  { owner: 'Bob Johnson', productName: 'Headphones', description: 'Noise-cancelling headphones.', imageURL: 'http://example.com/images/headphones.jpg', imageKey: 'headphones123', price: 199.99, publicationDate: new Date(), stock: 200 }
+  { owner: 'Bob Johnson', productName: 'Headphones', description: 'Noise-cancelling headphones.', imageURL: 'http://example.com/images/headphones.jpg', imageKey: 'headphones123', price: 199.99, publicationDate: new Date(), stock: 200 },
 ];
 const orderItems = [
   { cartID: 1, productID: 1, quantity: 1, productPrice: 999.99 },
@@ -164,8 +164,8 @@ async function seedOrderItems(client) {
     return insertedOrderItems;
   } catch (error)  {
     console.error('Error al insertar elementos de orden:', error);
-throw error;
-}
+  throw error;
+  }
 }
 
 async function main() {

@@ -1,16 +1,7 @@
 import { sql } from '@vercel/postgres';
+import { Product } from '../Entities/Product';
+export const fetchCache = 'force-no-store';
 
-interface Product {
-  id: number;
-  ownerID: string;
-  productName: string;
-  description?: string;
-  imageURL?: string;
-  imageKey?: string;
-  price: number;
-  publicationDate: Date;
-  stock: number;
-}
 
 class ProductsRepository {
   async getProductById(productId: number): Promise<Product | undefined> {
@@ -24,7 +15,6 @@ class ProductsRepository {
   }
 
   async createProduct(
-    ownerID: string, 
     productName: string, 
     description: string, 
     imageURL: string, 
@@ -34,8 +24,8 @@ class ProductsRepository {
   ): Promise<number> {
     try {
       const query = await sql`
-        INSERT INTO products (ownerID, productName, description, imageURL, imageKey, price, stock) 
-        VALUES (${ownerID}, ${productName}, ${description}, ${imageURL}, ${imageKey}, ${price}, ${stock}) 
+        INSERT INTO products ( productName, description, imageURL, imageKey, price, stock) 
+        VALUES (${productName}, ${description}, ${imageURL}, ${imageKey}, ${price}, ${stock}) 
         RETURNING id
       `;
       return query.rows[0].id;
@@ -88,15 +78,6 @@ class ProductsRepository {
     }
   }
 
-  async getProductsByOwnerId(ownerId: string): Promise<Product[]> {
-    try {
-      const query = await sql<Product>`SELECT * FROM products WHERE ownerID = ${ownerId}`;
-      return query.rows;
-    } catch (error) {
-      console.error(`Failed to fetch products for owner with ID ${ownerId}:`, error);
-      throw new Error(`Failed to fetch products for owner with ID ${ownerId}.`);
-    }
-  }
 }
 
 export default ProductsRepository;
