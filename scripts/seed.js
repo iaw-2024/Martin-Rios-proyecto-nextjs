@@ -130,7 +130,9 @@ async function seedSales(client) {
       CREATE TABLE IF NOT EXISTS sales (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         userID UUID NOT NULL,
+        username VARCHAR(200) NOT NULL,
         totalPrice DECIMAL(10, 2) NOT NULL,
+        totalProducts INT NOT NULL, 
         creationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         mercadoPagoID VARCHAR(50),
         FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
@@ -138,11 +140,13 @@ async function seedSales(client) {
     `);
 
     console.log(`Tabla "sales" creada`);
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS sales_orders (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         saleID UUID NOT NULL,
         productID UUID NOT NULL,
+        productName VARCHAR(255) NOT NULL, -- Nueva columna para el nombre del producto
         quantity INT NOT NULL,
         price DECIMAL(10, 2) NOT NULL,
         FOREIGN KEY (saleID) REFERENCES sales(id) ON DELETE CASCADE,
@@ -152,49 +156,52 @@ async function seedSales(client) {
 
     console.log(`Tabla "sales_orders" creada`);
 
-    const usersResult = await client.query('SELECT id FROM users WHERE name IN ($1, $2)', ['John Doe', 'Jane Smith']);
-    const userIDs = usersResult.rows.map(row => row.id);
+    const usersResult = await client.query('SELECT id, name FROM users WHERE name IN ($1, $2)', ['John Doe', 'Jane Smith']);
+    const users = usersResult.rows.map(row => ({id:row.id, name:row.name}));
 
-    const productsResult = await client.query('SELECT id, price FROM products');
-    const productIDs = productsResult.rows.map(row => ({ id: row.id, price: row.price }));
+    const productsResult = await client.query('SELECT id, productname, price FROM products');
+    const products = productsResult.rows.map(row => ({ id: row.id, name: row.productname, price: row.price }));
 
     const salesData = [
       {
-        userID: userIDs[0],
-        totalPrice: parseFloat(productIDs[0].price) + parseFloat(productIDs[1].price) + parseFloat(productIDs[2].price),
+        userID: users[0].id,
+        username: users[0].name,
+        totalPrice: parseFloat(products[0].price) + parseFloat(products[1].price) + parseFloat(products[2].price),
+        totalProducts: 3,
         mercadoPagoID: 'MP123456',
         products: [
-          { productID: productIDs[0].id, quantity: 1, price: productIDs[0].price },
-          { productID: productIDs[1].id, quantity: 1, price: productIDs[1].price },
-          { productID: productIDs[2].id, quantity: 1, price: productIDs[2].price }
+          { productID: products[0].id, productName: products[0].name, quantity: 1, price: products[0].price },
+          { productID: products[1].id, productName: products[1].name, quantity: 1, price: products[1].price },
+          { productID: products[2].id, productName: products[2].name, quantity: 1, price: products[2].price }
         ]
       },
       {
-        userID: userIDs[1],
-        totalPrice: parseFloat(productIDs[0].price) + parseFloat(productIDs[1].price) + parseFloat(productIDs[2].price),
+        userID: users[1].id,
+        username: users[1].name,
+        totalPrice: parseFloat(products[0].price) + parseFloat(products[1].price) + parseFloat(products[2].price),
+        totalProducts: 3,
         mercadoPagoID: 'MP654321',
         products: [
-          { productID: productIDs[0].id, quantity: 1, price: productIDs[0].price },
-          { productID: productIDs[1].id, quantity: 1, price: productIDs[1].price },
-          { productID: productIDs[2].id, quantity: 1, price: productIDs[2].price }
+          { productID: products[0].id, productName: products[0].name, quantity: 1, price: products[0].price },
+          { productID: products[1].id, productName: products[1].name, quantity: 1, price: products[1].price },
+          { productID: products[2].id, productName: products[2].name, quantity: 1, price: products[2].price }
         ]
       }
     ];
 
     const insertedSales = await Promise.all(salesData.map(async sale => {
       const saleResult = await client.query(`
-        INSERT INTO sales (userID, totalPrice, mercadoPagoID)
-        VALUES ($1, $2, $3)
+        INSERT INTO sales (userID, username, totalPrice, totalProducts, mercadoPagoID)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING id;
-      `, [sale.userID, sale.totalPrice, sale.mercadoPagoID]);
+      `, [sale.userID,sale.username, sale.totalPrice, sale.totalProducts, sale.mercadoPagoID]);
       const saleID = saleResult.rows[0].id;
-
 
       await Promise.all(sale.products.map(async product => {
         return client.query(`
-          INSERT INTO sales_orders (saleID, productID, quantity, price)
-          VALUES ($1, $2, $3, $4);
-        `, [saleID, product.productID, product.quantity, product.price]);
+          INSERT INTO sales_orders (saleID, productID, productName, quantity, price)
+          VALUES ($1, $2, $3, $4, $5);
+        `, [saleID, product.productID, product.productName, product.quantity, product.price]);
       }));
 
       return saleID;
@@ -208,6 +215,7 @@ async function seedSales(client) {
     throw error;
   }
 }
+
 
 async function seedOrderItems(client) {
   try {

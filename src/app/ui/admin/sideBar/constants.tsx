@@ -19,8 +19,8 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: <Icon icon="lucide:mail" width="24" height="24" />,
   },
   {
-    title: 'config',
-    path: '/settings',
+    title: 'Ventas',
+    path: '/admin/ventas',
     icon: <Icon icon="lucide:settings" width="24" height="24" />
   }
 ];
