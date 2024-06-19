@@ -1,4 +1,5 @@
 import { withAuth } from "next-auth/middleware";
+import { NextRequest } from "next/server";
 
 export default withAuth({
     pages: {
@@ -6,12 +7,13 @@ export default withAuth({
       signOut: '/logout'
     },
     callbacks: {
-        authorized: ({ req, token }) => {
+        authorized: ({ req, token}:{req:NextRequest, token:any}) => {
             //TODO verificar bien el tema de la ruta, dentro del req estan las url
             //también verificar el tema de las paginas de compra y demás
             //console.log(req)
 
-            return token?.user.role != 'admin'
+            console.log(token.role)
+            return token.role == 'admin'
         }
     }
 });
