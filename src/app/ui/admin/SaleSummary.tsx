@@ -7,6 +7,7 @@ import Link from 'next/link';
 
 const SaleSummary = ({ sale }: {sale:Sale}) => {
   return (
+    <div className="w-full rounded overflow-hidden shadow-lg bg-white m-4 p-6">
       <div className="flex justify-between items-center border-b pb-4 mb-4">
         <div>
             <h2 className="font-bold text-2xl">Resumen de Venta</h2>
@@ -23,6 +24,7 @@ const SaleSummary = ({ sale }: {sale:Sale}) => {
             </Link>
         </div>
       </div>
+    </div>
   );
 };
 
