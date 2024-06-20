@@ -1,28 +1,17 @@
 import ProductsRepository from "../lib/Repositories/ProductsRepository";
 import { unstable_noStore as noStore } from 'next/cache';
-import SearchBar from "../ui/admin/searchBar";
 import { Product } from "../lib/Entities/Product";
 import { Fragment } from "react";
 import Link from "next/link";
 import SalesRepository from "../lib/Repositories/SalesRepositor";
 import { Sale } from '../lib/Entities';
-import DeleteButton from "../ui/admin/deleteButton";
-import ProductCard from "../ui/admin/productCard";
 
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams?: {
-    query?: string;
-    page?: string;
-  };
-}) {
+export default async function AdminPage() {
   noStore();
 
   const salesRepository = new SalesRepository()
   const productsRepository = new ProductsRepository()
 
-  // Obtener datos para el panel de administración
   const recentSales: Sale[] = await salesRepository.getRecentSales();
   const { totalEarnings, totalSales } = await salesRepository.getMonthlyEarnings();
   const lowStockProducts: Product[] = await productsRepository.getOutOfStockProducts();
@@ -45,7 +34,6 @@ export default async function AdminPage({
               <p className="mt-2">${totalEarnings}</p>
             </div>
 
-            {/* Mini tarjeta para Total de Ventas */}
             <div className="bg-gray-100 rounded-lg p-4">
               <h3 className="text-xl font-semibold">Total de Ventas</h3>
               <p className="mt-2">{totalSales}</p>
