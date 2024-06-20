@@ -1,12 +1,12 @@
-import ProductsRepository from "../lib/Repositories/ProductsRepository";
-import ProductCard from "../ui/admin/productCard";
+import ProductsRepository from "../../lib/Repositories/ProductsRepository";
+import ProductCard from "../../ui/admin/productCard";
 import { unstable_noStore as noStore } from 'next/cache';
-import SearchBar from "../ui/admin/searchBar";
-import { Product } from "../lib/Entities/Product";
-import Pagination from "../ui/admin/Pagination";
+import SearchBar from "../../ui/admin/searchBar";
+import { Product } from "../../lib/Entities/Product";
+import Pagination from "../../ui/admin/Pagination";
 import { Fragment } from "react";
-import DeleteButton from "../ui/admin/deleteButton";
 import Link from "next/link";
+import ActivateButton from "@/app/ui/admin/ActivateButton";
 
 export default async function LoginPage({
   searchParams,
@@ -27,17 +27,17 @@ export default async function LoginPage({
   let totalPages = 1;
 
   if (query.length > 0) {
-    const result = await productsRepository.searchProductsByName(query, currentPage, ITEMS_PER_PAGE);
+    const result = await productsRepository.searchProductsByName(query, currentPage, ITEMS_PER_PAGE,false);
     products = result.products;
     totalPages = Math.ceil(result.total / ITEMS_PER_PAGE)
   } else {
-    const result = await productsRepository.getAllProductsPaginated(currentPage, ITEMS_PER_PAGE);
+    const result = await productsRepository.getAllProductsPaginated(currentPage, ITEMS_PER_PAGE, false);
     products = result.products;
     totalPages = Math.ceil(result.total / ITEMS_PER_PAGE)
   }
 
   return (
-    <Fragment>    
+    <Fragment>
       <div className="container mx-auto px-4">
         <SearchBar />
         {products.length === 0 ? (
@@ -52,11 +52,11 @@ export default async function LoginPage({
               {products.map((product) => (
                 <ProductCard key={product.id} product={product}>
                   <Link href={"/admin/"+product.id}>
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
-                    Modificar
-                  </button>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+                      Modificar
+                    </button>
                   </Link>
-                  <DeleteButton data={{id:product.id, imageId:product.imagekey}}/>
+                  <ActivateButton data={{id:product.id}}></ActivateButton>
                 </ProductCard>
               ))}
             </div>

@@ -7,4 +7,5 @@ export interface Product {
     price: number;
     publicationdate: Date;
     stock: number;
+    active: boolean;
   }

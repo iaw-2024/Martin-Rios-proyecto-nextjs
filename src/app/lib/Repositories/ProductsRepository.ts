@@ -58,18 +58,6 @@ class ProductsRepository {
     }
   }
 
-  async deleteProduct(productId: string): Promise<void> {
-    try {
-      await sql`
-        DELETE FROM products 
-        WHERE id = ${productId}
-      `;
-    } catch (error) {
-      console.error('Failed to delete product:', error);
-      throw new Error('Failed to delete product.');
-    }
-  }
-
   async getAllProducts(): Promise<Product[]> {
     try {
       const query = await sql<Product>`SELECT * FROM products`;
@@ -82,18 +70,20 @@ class ProductsRepository {
 
   async getAllProductsPaginated(
     page: number,
-    pageSize: number
+    pageSize: number,
+    active: boolean = true
   ): Promise<{products:Product[], total:number}> {
     try {
       const offset = (page - 1) * pageSize;
   
       const query = await sql<Product>
         `SELECT * FROM products 
+        WHERE active = ${active}
         ORDER BY productName
         LIMIT ${pageSize} OFFSET ${offset}`;
 
       const totalQuery = await sql<{ count: number }>`
-      SELECT COUNT(*) as count FROM products`;
+      SELECT COUNT(*) as count FROM products WHERE active = ${active}`;
       const total = totalQuery.rows[0].count;
       
       return {
@@ -110,20 +100,23 @@ class ProductsRepository {
     productName: string,
     page: number,
     pageSize: number,
-  ): Promise<{products:Product[], total:number}> {
+    active: boolean = true
+  ): Promise<{ products: Product[], total: number }> {
     try {
       const offset = (page - 1) * pageSize;
   
-      // Query to get the total count of matching products
       const totalQuery = await sql<{ count: number }>`
-        SELECT COUNT(*) as count FROM products WHERE productName ILIKE ${'%' + productName + '%'}
+        SELECT COUNT(*) as count 
+        FROM products 
+        WHERE productName ILIKE ${'%' + productName + '%'} 
+        AND active = ${active}
       `;
       const total = totalQuery.rows[0].count;
   
-      // Query to get the paginated products
       const query = await sql<Product>`
         SELECT * FROM products
         WHERE productName ILIKE ${'%' + productName + '%'}
+        AND active = ${active}
         ORDER BY productName
         LIMIT ${pageSize} OFFSET ${offset}
       `;
@@ -134,6 +127,19 @@ class ProductsRepository {
     } catch (error) {
       console.error(`Failed to fetch products with name matching "${productName}":`, error);
       throw new Error(`Failed to fetch products with name matching "${productName}".`);
+    }
+  }
+
+  async changeProductActiveStatus(productId: string, active: boolean): Promise<void> {
+    try {
+      await sql`
+        UPDATE products
+        SET active = ${active}
+        WHERE id = ${productId}
+      `;
+    } catch (error) {
+      console.error(`Failed to change active status for product with ID ${productId}:`, error);
+      throw new Error(`Failed to change active status for product with ID ${productId}.`);
     }
   }
 

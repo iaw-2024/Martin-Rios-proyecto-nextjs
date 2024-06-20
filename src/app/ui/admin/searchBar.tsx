@@ -3,13 +3,13 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 
+
 export default function SearchBar(){
     const searchParams = useSearchParams();
     const { replace } = useRouter();
     const pathname = usePathname();
     const [search, setSearch] = useState<string>("")
     function handleSearch() {
-        console.log(`Searching... ${search}`);
 
         const params = new URLSearchParams(searchParams);
 

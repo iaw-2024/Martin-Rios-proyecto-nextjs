@@ -19,7 +19,6 @@ export default function LoginForm() {
       redirect: true,
     });
 
-    console.log({ response });
   };
 
   return (
