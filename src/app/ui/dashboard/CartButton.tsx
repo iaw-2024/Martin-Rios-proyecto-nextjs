@@ -30,7 +30,7 @@ const CartButton = () => {
                 </a>
                 <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" href="#">
                   <Link href="/cart">
-                    <p className="text-white text-lg">Cart</p>
+                    <p className="font-semibold text-white">Cart</p>
                   </Link>
                 </a>
               </div>
