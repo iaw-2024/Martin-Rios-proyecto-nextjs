@@ -1,14 +1,15 @@
 import ProductsRepository from "../lib/Repositories/ProductsRepository";
-import ProductCard from "../ui/admin/productCard";
 import { unstable_noStore as noStore } from 'next/cache';
 import SearchBar from "../ui/admin/searchBar";
 import { Product } from "../lib/Entities/Product";
-import Pagination from "../ui/admin/Pagination";
 import { Fragment } from "react";
-import DeleteButton from "../ui/admin/deleteButton";
 import Link from "next/link";
+import SalesRepository from "../lib/Repositories/SalesRepositor";
+import { Sale } from '../lib/Entities';
+import DeleteButton from "../ui/admin/deleteButton";
+import ProductCard from "../ui/admin/productCard";
 
-export default async function LoginPage({
+export default async function AdminPage({
   searchParams,
 }: {
   searchParams?: {
@@ -18,51 +19,75 @@ export default async function LoginPage({
 }) {
   noStore();
 
-  const ITEMS_PER_PAGE= 6
+  const salesRepository = new SalesRepository()
+  const productsRepository = new ProductsRepository()
 
-  const query = searchParams?.query || '';
-  const currentPage = Number(searchParams?.page) || 1;
-  const productsRepository = new ProductsRepository();
+  // Obtener datos para el panel de administración
+  const recentSales: Sale[] = await salesRepository.getRecentSales();
+  const { totalEarnings, totalSales } = await salesRepository.getMonthlyEarnings();
+  const lowStockProducts: Product[] = await productsRepository.getOutOfStockProducts();
+
   let products: Product[] = [];
   let totalPages = 1;
 
-  if (query.length > 0) {
-    const result = await productsRepository.searchProductsByName(query, currentPage, ITEMS_PER_PAGE);
-    products = result.products;
-    totalPages = Math.ceil(result.total / ITEMS_PER_PAGE)
-  } else {
-    const result = await productsRepository.getAllProductsPaginated(currentPage, ITEMS_PER_PAGE);
-    products = result.products;
-    totalPages = Math.ceil(result.total / ITEMS_PER_PAGE)
-  }
-
   return (
-    <Fragment>    
-      <div className="container mx-auto px-4">
-        <SearchBar />
-        {products.length === 0 ? (
-          <div className="h-screen flex items-center justify-center bg-gray-100">
-          <div className="text-center text-gray-700">
-              <p className="text-xl">parece que no encontramos resultados para su búsqueda..</p>
+    <Fragment>
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white shadow-md rounded-lg p-6">
+
+          <div className="mb-6 border-t-2 border-gray-300 pt-4">
+            <h2 className="text-2xl font-bold mb-4">Resumen del Administrador</h2>
           </div>
-      </div>
-        ) : (
-          <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product}>
-                  <Link href={"/admin/"+product.id}>
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
-                    Modificar
-                  </button>
-                  </Link>
-                  <DeleteButton data={{id:product.id, imageId:product.imagekey}}/>
-                </ProductCard>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div className="bg-gray-100 rounded-lg p-4">
+              <h3 className="text-xl font-semibold">Total Ganado</h3>
+              <p className="mt-2">${totalEarnings}</p>
+            </div>
+
+            {/* Mini tarjeta para Total de Ventas */}
+            <div className="bg-gray-100 rounded-lg p-4">
+              <h3 className="text-xl font-semibold">Total de Ventas</h3>
+              <p className="mt-2">{totalSales}</p>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold mb-4">Últimas 3 Ventas</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {recentSales.map(sale => (
+                <div key={sale.id} className="bg-gray-100 rounded-lg p-4">
+                  <p className="text-lg font-semibold">{sale.username}</p>
+                  <p className="text-sm text-gray-600">${sale.totalprice}</p>
+                  <p className="text-xs text-gray-500">{new Date(sale.creationdate).toLocaleDateString()}</p>
+                </div>
               ))}
             </div>
-            <Pagination totalPages={totalPages} currentPage={currentPage} query={query} />
+            <Link href="/admin/ventas">
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Ir a Ventas</button>
+            </Link>
           </div>
-        )}
+
+          <div>
+            <h3 className="text-xl font-semibold mb-4">Productos sin Stock</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {lowStockProducts.length > 0 ? (
+                lowStockProducts.map(product => (
+                  <div key={product.id} className="bg-gray-100 rounded-lg p-4">
+                    <p className="text-lg font-semibold">{product.productname}</p>
+                    <p className="text-sm text-gray-600">Stock: {product.stock}</p>
+                    <Link href={`/admin/activos/${product.id}`}>
+                      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2">Ir a Producto</button>
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">Todos los productos están al día</p>
+              )}
+            </div>
+          </div>
+
+        </div>
       </div>
     </Fragment>
   );
