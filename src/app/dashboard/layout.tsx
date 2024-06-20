@@ -1,7 +1,4 @@
 import { Fragment } from "react";
-import SideNav from "../ui/admin/sideBar/SideBar";
-import Header from "../ui/admin/sideBar/header";
-import HeaderMobile from "../ui/admin/sideBar/header-mobile";
 import NavBar from "../ui/navBar";
 export default function RootLayout({
   children,
@@ -12,7 +9,7 @@ export default function RootLayout({
     <Fragment>
       <NavBar></NavBar>
       <main className="flex-1">
-        <div className="flex flex-col pt-2 px-4 space-y-2 bg-zinc-100 flex-grow pb-4">
+        <div className="flex flex-col pt-2 px-2 space-y-2 bg-zinc-100 flex-grow pb-4">
           {children}
         </div>
       </main>
