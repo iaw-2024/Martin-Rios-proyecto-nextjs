@@ -7,7 +7,6 @@ interface SaleDetailProps {
 }
 
 const SaleDetail = ({ sale, orders }: SaleDetailProps) => {
-  console.log(orders)
   return (
     <div className="w-full rounded overflow-hidden shadow-lg bg-white m-4 p-6">
       <div className="flex justify-between items-center border-b pb-4 mb-4">

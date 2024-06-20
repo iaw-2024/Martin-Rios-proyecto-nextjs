@@ -1,10 +1,9 @@
-'use client'
 import React from 'react';
 import { Product } from '@/app/lib/Entities/Product';
 import DeleteButton from './deleteButton';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 
-const ProductCard = ({ product }:{product:Product}) => {
+const ProductCard = ({ product, children }:{product:Product, children?: React.ReactNode}) => {
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white m-4 flex flex-col">
       <img src={product.imageurl} alt={product.productname} className="w-full h-48 sm:h-64 object-cover" />
@@ -17,11 +16,7 @@ const ProductCard = ({ product }:{product:Product}) => {
           </div>
         </div>
         <div className="flex space-x-2">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
-            Modificar
-          </button>
-          
-          <DeleteButton data={{id:product.id, imageId:product.imagekey}}></DeleteButton>
+          {children}
         </div>
       </div>
     </div>

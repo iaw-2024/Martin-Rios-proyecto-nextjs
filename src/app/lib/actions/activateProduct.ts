@@ -10,22 +10,11 @@ cloudinary.config({
   })
   
 
-export async function deleteProduct(formData: FormData) {
+export async function activateProduct(formData: FormData) {
     const id = String(formData.get('id'))
-    const imageId = String(formData.get('imageId'))
     const productsRepository = new ProductsRepository()
     try{
-        productsRepository.deleteProduct(id)
-        cloudinary.uploader.destroy(imageId)
-        const result:UploadApiResponse|undefined= await new Promise((resolve, reject)=>{
-            cloudinary.uploader.destroy(imageId, function(error, result ){
-                if(error){
-                    reject(error)
-                    return 
-                }
-                resolve(result)
-            })
-        })
+        productsRepository.changeProductActiveStatus(id,true)
         revalidatePath('/')
         return{
             success:true
@@ -33,7 +22,7 @@ export async function deleteProduct(formData: FormData) {
     }
     catch(error){
         return{
-            mgs: "Error deleting a product",
+            mgs: "Error activating product",
             success:false
         }
     }

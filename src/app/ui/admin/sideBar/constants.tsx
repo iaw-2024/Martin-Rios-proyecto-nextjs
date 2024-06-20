@@ -9,7 +9,8 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: <Icon icon="lucide:home" width="24" height="24" />,
     submenu: true,
     subMenuItems: [
-      { title: 'Todos', path: '/admin' },
+      { title: 'Activos', path: '/admin' },
+      { title: 'Inactivos', path: '/admin/inactivos' },
       { title: 'Agregar', path: '/admin/nuevo' }
     ],
   },

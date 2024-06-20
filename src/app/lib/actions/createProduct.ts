@@ -19,7 +19,6 @@ export async function createProduct(formData: FormData) {
         const result:UploadApiResponse|undefined= await new Promise((resolve, reject)=>{
             cloudinary.uploader.upload_stream({folder:"proyecto_web"}, function(error, result ){
                 if(error){
-                    console.log(error)
                     reject(error)
                     return 
                 }
