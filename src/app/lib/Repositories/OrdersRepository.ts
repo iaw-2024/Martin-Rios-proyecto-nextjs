@@ -4,7 +4,7 @@ import { Product } from '../Entities/Product';
 
 
 class OrderItemsRepository {
-  async getOrderItemById(orderItemId: number): Promise<OrderItem | undefined> {
+  async getOrderItemById(orderItemId: string): Promise<OrderItem | undefined> {
     try {
       const query = await sql<OrderItem>`SELECT * FROM orderItems WHERE id = ${orderItemId}`;
       return query.rows[0];
@@ -19,7 +19,7 @@ class OrderItemsRepository {
     productID: string,
     quantity: number,
     productPrice: number
-  ): Promise<number> {
+  ): Promise<string> {
     try {
       const query = await sql`
         INSERT INTO orderItems (cartID, productID, quantity, productPrice) 
@@ -34,7 +34,7 @@ class OrderItemsRepository {
   }
 
   async updateOrderItem(
-    orderItemId: number,
+    orderItemId: string,
     quantity: number,
     productPrice: number
   ): Promise<void> {
@@ -50,7 +50,7 @@ class OrderItemsRepository {
     }
   }
 
-  async deleteOrderItem(orderItemId: number): Promise<void> {
+  async deleteOrderItem(orderItemId: string): Promise<void> {
     try {
       await sql`
         DELETE FROM orderItems 

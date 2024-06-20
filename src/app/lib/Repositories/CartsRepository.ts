@@ -1,16 +1,11 @@
 import { sql } from '@vercel/postgres';
 import { v4 as uuidv4 } from 'uuid';
+import { Cart } from '../Entities/Cart';
 
-interface Cart {
-  id: string;
-  userID: string;
-  totalPrice: number;
-  creationDate: Date;
-  mercadoPagoID?: string;
-}
+
 
 class CartsRepository {
-  async getCartById(cartId: number): Promise<Cart | undefined> {
+  async getCartById(cartId: string): Promise<Cart | undefined> {
     try {
       const query = await sql<Cart>`SELECT * FROM carts WHERE id = ${cartId}`;
       return query.rows[0];
@@ -47,7 +42,7 @@ class CartsRepository {
     }
   }
 
-  async deleteCart(cartId: number): Promise<void> {
+  async deleteCart(cartId: string): Promise<void> {
     try {
       await sql`
         DELETE FROM carts 

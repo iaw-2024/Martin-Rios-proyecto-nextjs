@@ -1,8 +1,8 @@
 export interface OrderItem {
-    id: number;
-    cartID: number;
-    productID: number;
-    dateAdded: Date;
+    orderitemid: string;
+    cartid: string;
+    productid: string;
+    dateadded: Date;
     quantity: number;
-    productPrice: number;
+    productprice: number;
   }
