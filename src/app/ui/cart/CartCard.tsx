@@ -17,7 +17,7 @@ const CartWrapper: React.FC<CartWrapperProps> = ({ product, onIncrease, onDecrea
             <div className="px-6 py-4 flex-1 flex flex-col justify-between">
                 <div>
                     <div className="font-bold text-xl mb-2">{product.productname}</div>
-                    <p className="text-gray-700 text-base mb-2">Unit Price: ${product.productprice}</p>
+                    <p className="text-gray-700 text-base mb-2">Precio unitario: ${product.productprice}</p>
                     <p className="text-gray-700 text-base mb-2">Total: ${(product.productprice * product.quantity).toFixed(2)}</p>
                 </div>
                 <div className="flex items-center">
@@ -38,7 +38,7 @@ const CartWrapper: React.FC<CartWrapperProps> = ({ product, onIncrease, onDecrea
                         className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-400 ml-4"
                         onClick={() => onRemove(product.id)}
                     >
-                        Remove
+                        Quitar producto
                     </button>
                 </div>
             </div>
