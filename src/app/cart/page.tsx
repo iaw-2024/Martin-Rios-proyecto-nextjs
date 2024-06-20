@@ -1,4 +1,3 @@
-import ProductsRepository from "../lib/Repositories/ProductsRepository";
 import { getServerSession, Session } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/auth-config";
 import CartsRepository from "../lib/Repositories/CartsRepository";
@@ -6,10 +5,10 @@ import { ProductList } from "../ui/cart/ProductList";
 import { Product } from "../lib/Entities/Product";
 import OrderItemsRepository from "../lib/Repositories/OrdersRepository";
 import { OrderItem } from "../lib/Entities/Order";
-
+import { unstable_noStore as noStore } from 'next/cache';
 
 export default async function CartPage() {
-
+  noStore();
   const session:Session|null = await getServerSession(authOptions)
 
   const cartsRepository = new CartsRepository()
@@ -26,7 +25,6 @@ export default async function CartPage() {
 
   console.log(cartProducts)
 
-  //Agregar el ProductList
  return (
     <section className="w-full mb-4">
         <ProductList cartProducts={cartProducts}></ProductList>
