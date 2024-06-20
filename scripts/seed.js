@@ -101,7 +101,8 @@ async function seedProducts(client) {
         imageKey VARCHAR(100),
         price DECIMAL(10, 2) NOT NULL,
         publicationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        stock INT NOT NULL
+        stock INT NOT NULL,
+        active BOOLEAN DEFAULT true
       );
     `);
 
