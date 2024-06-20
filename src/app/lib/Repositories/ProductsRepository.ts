@@ -143,6 +143,19 @@ class ProductsRepository {
     }
   }
 
+  async getOutOfStockProducts(): Promise<Product[]> {
+    try {
+      const query = await sql<Product>`
+        SELECT * FROM products
+        WHERE stock = 0 AND active = true
+      `;
+      return query.rows;
+    } catch (error) {
+      console.error('Failed to fetch out-of-stock products:', error);
+      throw new Error('Failed to fetch out-of-stock products.');
+    }
+  }
+
 }
 
 export default ProductsRepository;
