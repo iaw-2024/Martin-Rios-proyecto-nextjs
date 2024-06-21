@@ -222,7 +222,7 @@ async function seedOrderItems(client) {
   try {
     await client.query(`
       CREATE TABLE IF NOT EXISTS orderItems (
-        id SERIAL PRIMARY KEY,
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         cartID UUID NOT NULL,
         productID UUID NOT NULL,
         dateAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

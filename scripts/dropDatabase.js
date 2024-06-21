@@ -2,6 +2,9 @@ const { db } = require('@vercel/postgres');
 
 async function dropTables(client) {
   try {
+    await client.query('DROP TABLE IF EXISTS orderitems CASCADE');
+    console.log('Tabla "orderitems" eliminada');
+
     await client.query('DROP TABLE IF EXISTS sales_orders CASCADE');
     console.log('Tabla "sales_orders" eliminada');
     
@@ -16,6 +19,8 @@ async function dropTables(client) {
     
     await client.query('DROP TABLE IF EXISTS users CASCADE');
     console.log('Tabla "users" eliminada');
+
+    
     
   } catch (error) {
     console.error('Error al eliminar tablas:', error);
