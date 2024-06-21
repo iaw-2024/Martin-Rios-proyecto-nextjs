@@ -19,30 +19,38 @@ export function ProductList({ cartProducts }: { cartProducts: (OrderItem & Produ
     }, [cartProducts]);
 
     const handleRemoveProduct = async (orderitemid: string) => {
-        await removeProduct(orderitemid, cartId);
-        const updatedProducts = products.filter(product => product.orderitemid !== orderitemid);
-        setProducts(updatedProducts);
+        const handlerResult = await removeProduct(orderitemid, cartId);
+        if (handlerResult.success) {
+            const updatedProducts = products.filter(product => product.orderitemid !== orderitemid);
+            setProducts(updatedProducts);
+        }
     };
 
     const handleIncreaseQuantity = async (orderitemid: string) => {
-        await increaseQuantity(orderitemid, cartId);
-        const updatedProducts = products.map(product =>
-            product.orderitemid === orderitemid ? { ...product, quantity: product.quantity + 1 } : product
-        );
-        setProducts(updatedProducts);
+        const handlerResult = await increaseQuantity(orderitemid, cartId);
+        if (handlerResult.success) {
+            const updatedProducts = products.map(product =>
+                product.orderitemid === orderitemid ? { ...product, quantity: product.quantity + 1 } : product
+            );
+            setProducts(updatedProducts);
+        }
     };
 
     const handleDecreaseQuantity = async (orderitemid: string) => {
-        await decreaseQuantity(orderitemid, cartId);
-        const updatedProducts = products.map(product =>
-            product.orderitemid === orderitemid && product.quantity > 1 ? { ...product, quantity: product.quantity - 1 } : product
-        );
-        setProducts(updatedProducts);
+        const handlerResult = await decreaseQuantity(orderitemid, cartId);
+        if (handlerResult.success) {
+            const updatedProducts = products.map(product =>
+                product.orderitemid === orderitemid && product.quantity > 1 ? { ...product, quantity: product.quantity - 1 } : product
+            );
+            setProducts(updatedProducts);
+        }
     };
 
     const handleClearCart = async () => {
-        await clearCart(cartId);
-        setProducts([]);
+        const handlerResult = await clearCart(cartId);
+        if (handlerResult.success) {
+            setProducts([]);
+        }
     };
 
     return (

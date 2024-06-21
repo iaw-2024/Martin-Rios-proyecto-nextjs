@@ -6,15 +6,15 @@ import { Product } from '@/app/lib/Entities/Product';
 
 import Link from 'next/link';
 import { addProductToCart } from '@/app/lib/actions/addProductToCart';
+import { addProductToLocalStorage } from '@/app/lib/actions/addProductToLocalStorage';
 
 
 function AddCartButton({ product, userID }: { product: Product, userID: string | undefined }) {
 
     let [isOpen, setIsOpen] = useState(false)
-
     const handleClick = () => {
         if (!userID) {
-            console.log("Tengo que agregar producto en el local storage")
+            addProductToLocalStorage(product);
         } else
             addProductToCart(product, userID);
             setIsOpen(true)

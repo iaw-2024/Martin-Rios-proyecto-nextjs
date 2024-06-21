@@ -11,7 +11,7 @@ export const removeProduct = async (orderitemid: string, cartId: string) => {
     const orderItem = await orderItemsRepository.getOrderItemById(orderitemid);
     try {
         if (orderItem) {
-            await orderItemsRepository.deleteOrderItem(orderItem.orderitemid);
+            await orderItemsRepository.deleteOrderItem(orderitemid);
             const updatedOrderItems = await orderItemsRepository.getOrdersByCartId(cartId);
     
             if (updatedOrderItems.length === 0) {
@@ -35,10 +35,12 @@ export const removeProduct = async (orderitemid: string, cartId: string) => {
 };
 
 export const increaseQuantity = async (orderitemid: string, cartId: string) => {
+    
+    
     const orderItem = await orderItemsRepository.getOrderItemById(orderitemid);
     try {
         if (orderItem) {
-            await orderItemsRepository.updateOrderItem(orderItem.orderitemid, orderItem.quantity + 1, orderItem.productprice);
+            await orderItemsRepository.updateOrderItem(orderitemid, orderItem.quantity + 1, orderItem.productprice);
             const updatedOrderItems = await orderItemsRepository.getOrdersByCartId(cartId);
             const updatedCartTotal = updatedOrderItems.reduce((acc, product) => acc + product.productprice * product.quantity, 0);
             await cartsRepository.updateCart(cartId, updatedCartTotal, "abc");
@@ -60,7 +62,7 @@ export const decreaseQuantity = async (orderitemid: string, cartId: string) => {
     const orderItem = await orderItemsRepository.getOrderItemById(orderitemid);
     try {
         if (orderItem && orderItem.quantity > 1) {
-            await orderItemsRepository.updateOrderItem(orderItem.orderitemid, orderItem.quantity - 1, orderItem.productprice);
+            await orderItemsRepository.updateOrderItem(orderitemid, orderItem.quantity - 1, orderItem.productprice);
             const updatedOrderItems = await orderItemsRepository.getOrdersByCartId(cartId);
             const updatedCartTotal = updatedOrderItems.reduce((acc, product) => acc + product.productprice * product.quantity, 0);
             await cartsRepository.updateCart(cartId, updatedCartTotal, "abc");

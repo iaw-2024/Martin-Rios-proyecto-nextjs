@@ -14,7 +14,6 @@ cloudinary.config({
 
 export async function addProductToCart(product: Product, userID: string) {
     try {
-        const productsRepository = new ProductsRepository();
         const ordersRepository = new OrderItemsRepository();
         const cartsRepository = new CartsRepository();
 
@@ -27,7 +26,7 @@ export async function addProductToCart(product: Product, userID: string) {
                 await ordersRepository.createOrderItem(cartId, product.id, 1, product.price);
             } else {
                 await ordersRepository.createOrderItem(cart.id, product.id, 1, product.price);
-                const updatedCartTotal = cart.totalPrice + product.price; // Actualizar el precio total del carrito
+                const updatedCartTotal = parseFloat(cart.totalPrice + "") + parseFloat(product.price + ""); 
                 await cartsRepository.updateCart(cart.id, updatedCartTotal, "abc");
                 
             }

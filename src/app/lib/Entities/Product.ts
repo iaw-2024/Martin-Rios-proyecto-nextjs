@@ -3,7 +3,7 @@ export interface Product {
   productname: string;
   description?: string;
   imageurl: string;
-  imagekey?: string;
+  imagekey: string;
   price: number;
   publicationdate: Date;
   stock: number;

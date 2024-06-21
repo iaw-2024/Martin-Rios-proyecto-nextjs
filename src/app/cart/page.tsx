@@ -1,3 +1,5 @@
+'use client'
+
 import { getServerSession, Session } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/auth-config";
 import CartsRepository from "../lib/Repositories/CartsRepository";
@@ -8,6 +10,7 @@ import { OrderItem } from "../lib/Entities/Order";
 import { unstable_noStore as noStore } from 'next/cache';
 import { Fragment } from "react";
 import Link from "next/link";
+import { getCartProductsFromLocalStorage } from "../lib/actions/getProductFromLocalStorage";
 
 export default async function CartPage() {
   noStore();
@@ -22,6 +25,8 @@ export default async function CartPage() {
     let cart = await cartsRepository.getCartByUserId(session.user.id)
     if (!!cart)
       cartProducts = await ordersRepository.getOrdersByCartId(cart.id)
+  }else{
+    cartProducts = getCartProductsFromLocalStorage();
   }
 
 
