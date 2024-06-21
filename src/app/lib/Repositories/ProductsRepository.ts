@@ -4,7 +4,7 @@ export const fetchCache = 'force-no-store';
 
 
 class ProductsRepository {
-  async getProductById(productId: number): Promise<Product | undefined> {
+  async getProductById(productId: string): Promise<Product | undefined> {
     try {
       const query = await sql<Product>`SELECT * FROM products WHERE id = ${productId}`;
       return query.rows[0];
@@ -37,20 +37,13 @@ class ProductsRepository {
     }
   }
 
-  async updateProduct(
-    productId: string, 
-    productName: string, 
-    description: string, 
-    imageURL: string, 
-    imageKey: string, 
-    price: number, 
-    stock: number
-  ): Promise<void> {
+  async updateProduct(product:Product): Promise<void> {
     try {
+      const {productname, description, imageurl, imagekey, price, stock, id} = product
       await sql`
         UPDATE products 
-        SET productName = ${productName}, description = ${description}, imageURL = ${imageURL}, imageKey = ${imageKey}, price = ${price}, stock = ${stock} 
-        WHERE id = ${productId}
+        SET productName = ${productname}, description = ${description}, imageURL = ${imageurl}, imageKey = ${imagekey}, price = ${price}, stock = ${stock} 
+        WHERE id = ${id}
       `;
     } catch (error) {
       console.error('Failed to update product:', error);
