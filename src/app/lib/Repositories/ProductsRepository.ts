@@ -37,20 +37,13 @@ class ProductsRepository {
     }
   }
 
-  async updateProduct(
-    productId: string, 
-    productName: string, 
-    description: string, 
-    imageURL: string, 
-    imageKey: string, 
-    price: number, 
-    stock: number
-  ): Promise<void> {
+  async updateProduct(product:Product): Promise<void> {
     try {
+      const {productname, description, imageurl, imagekey, price, stock, id} = product
       await sql`
         UPDATE products 
-        SET productName = ${productName}, description = ${description}, imageURL = ${imageURL}, imageKey = ${imageKey}, price = ${price}, stock = ${stock} 
-        WHERE id = ${productId}
+        SET productName = ${productname}, description = ${description}, imageURL = ${imageurl}, imageKey = ${imagekey}, price = ${price}, stock = ${stock} 
+        WHERE id = ${id}
       `;
     } catch (error) {
       console.error('Failed to update product:', error);
@@ -140,6 +133,19 @@ class ProductsRepository {
     } catch (error) {
       console.error(`Failed to change active status for product with ID ${productId}:`, error);
       throw new Error(`Failed to change active status for product with ID ${productId}.`);
+    }
+  }
+
+  async getOutOfStockProducts(): Promise<Product[]> {
+    try {
+      const query = await sql<Product>`
+        SELECT * FROM products
+        WHERE stock = 0 AND active = true
+      `;
+      return query.rows;
+    } catch (error) {
+      console.error('Failed to fetch out-of-stock products:', error);
+      throw new Error('Failed to fetch out-of-stock products.');
     }
   }
 

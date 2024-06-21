@@ -64,6 +64,39 @@ class SalesRepository {
         throw new Error('Failed to fetch sales.');
     }
   }
+  async getRecentSales(limit: number = 3): Promise<Sale[]> {
+    try {
+      const query = await sql<Sale>`
+        SELECT * FROM sales
+        ORDER BY creationDate DESC
+        LIMIT ${limit}
+      `;
+      return query.rows;
+    } catch (error) {
+      console.error('Failed to fetch recent sales:', error);
+      throw new Error('Failed to fetch recent sales.');
+    }
+  }
+
+  async getMonthlyEarnings(): Promise<{ totalEarnings: number, totalSales: number }> {
+    try {
+      const currentDate = new Date();
+      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+      const query = await sql<Sale>`
+        SELECT * FROM sales
+        WHERE creationDate >= ${firstDayOfMonth.toISOString()} AND creationDate <= ${lastDayOfMonth.toISOString()}`;
+
+      const totalEarnings = query.rows.reduce((total, sale) => total + parseFloat(""+sale.totalprice), 0);
+      const totalSales = query.rows.length;
+
+      return { totalEarnings, totalSales };
+    } catch (error) {
+      console.error('Failed to fetch monthly earnings:', error);
+      throw new Error('Failed to fetch monthly earnings.');
+    }
+  }
 }
 
 export default SalesRepository;
