@@ -4,7 +4,7 @@ export const fetchCache = 'force-no-store';
 
 
 class ProductsRepository {
-  async getProductById(productId: number): Promise<Product | undefined> {
+  async getProductById(productId: string): Promise<Product | undefined> {
     try {
       const query = await sql<Product>`SELECT * FROM products WHERE id = ${productId}`;
       return query.rows[0];
