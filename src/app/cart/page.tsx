@@ -1,5 +1,3 @@
-'use client'
-
 import { getServerSession, Session } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/auth-config";
 import CartsRepository from "../lib/Repositories/CartsRepository";
