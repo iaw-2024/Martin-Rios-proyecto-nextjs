@@ -123,13 +123,17 @@ class ProductsRepository {
     }
   }
 
-  async changeProductActiveStatus(productId: string, active: boolean): Promise<void> {
+  async changeProductActiveStatus(productId: string, active: boolean): Promise<{updatedRows:number}> {
     try {
-      await sql`
+      const result = await sql`
         UPDATE products
         SET active = ${active}
         WHERE id = ${productId}
       `;
+
+      return {
+        updatedRows: result.rowCount
+      }
     } catch (error) {
       console.error(`Failed to change active status for product with ID ${productId}:`, error);
       throw new Error(`Failed to change active status for product with ID ${productId}.`);
