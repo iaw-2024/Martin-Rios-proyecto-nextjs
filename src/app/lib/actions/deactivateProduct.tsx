@@ -15,17 +15,14 @@ export async function deactivateProduct(formData: FormData) {
     const imageId = String(formData.get('imageId'))
     const productsRepository = new ProductsRepository()
     try{
-        productsRepository.changeProductActiveStatus(id,false)
-        /*cloudinary.uploader.destroy(imageId)
-        const result:UploadApiResponse|undefined= await new Promise((resolve, reject)=>{
-            cloudinary.uploader.destroy(imageId, function(error, result ){
-                if(error){
-                    reject(error)
-                    return 
-                }
-                resolve(result)
-            })
-        })*/
+        const {updatedRows} = await productsRepository.changeProductActiveStatus(id,false)
+
+        if(updatedRows == 0){
+            return {
+                success:false,
+                msg: "Product Id not fount"
+            }
+        }
         revalidatePath('/')
         return{
             success:true

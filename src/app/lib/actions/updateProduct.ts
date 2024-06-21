@@ -11,6 +11,44 @@ cloudinary.config({
 });
 
 export async function updateProduct(formData: FormData) {
+  const errors: { [key: string]: string } = {};
+
+  const productName = formData.get("productName");
+  const description = formData.get("description");
+  const price = formData.get("price");
+  const stock = formData.get("stock");
+  const image = formData.get("image") as File;
+
+
+  //esto se podría poner en una carpeta utils para tener la misma validación tanto en la creación como en la actualización
+  if (
+    !productName ||
+    typeof productName !== "string" ||
+    productName.length < 3
+  ) {
+    errors.productName = "Product name must be at least 3 characters long";
+  }
+  if (
+    !description ||
+    typeof description !== "string" ||
+    description.length < 20
+  ) {
+    errors.description = "Description must be at least 20 characters long";
+  }
+  if (!price || isNaN(Number(price)) || Number(price) <= 0) {
+    errors.price = "Price must be a positive number";
+  }
+  if (!stock || isNaN(Number(stock)) || Number(stock) < 0) {
+    errors.stock = "Stock must be a non-negative number";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return {
+      success: false,
+      errors,
+    };
+  }
+
   try {
     const productsRepository = new ProductsRepository();
     const productId = String(formData.get("id"));
@@ -20,13 +58,13 @@ export async function updateProduct(formData: FormData) {
     if (!product) {
       return {
         success: false,
-        msg: "Product not fount",
+        msg: "Product not found",
       };
     }
     let imageURL = product.imageurl;
-    let imageKey = product.imageurl;
+    let imageKey = product.imagekey;
     if (formData.has("image")) {
-      const arrayBuffer = await (formData.get("image") as File).arrayBuffer();
+      const arrayBuffer = await image.arrayBuffer();
       const buffer = new Uint8Array(arrayBuffer);
 
       const result: UploadApiResponse | undefined = await new Promise(
@@ -47,13 +85,16 @@ export async function updateProduct(formData: FormData) {
       );
 
       await new Promise((resolve, reject) => {
-        cloudinary.uploader.destroy(imageURL, function (error:any, result:any) {
-          if (error) {
-            reject(error);
-            return;
+        cloudinary.uploader.destroy(
+          imageKey,
+          function (error: any, result: any) {
+            if (error) {
+              reject(error);
+              return;
+            }
+            resolve(result);
           }
-          resolve(result);
-        });
+        );
       });
 
       if (result) {
@@ -68,10 +109,10 @@ export async function updateProduct(formData: FormData) {
       description: String(formData.get("description")),
       price: Number(formData.get("price")),
       stock: Number(formData.get("stock")),
-      imageurl: imageURL || String(formData.get("imageURL")),
-      imagekey: imageKey || String(formData.get("imageKey")),
+      imageurl: imageURL,
+      imagekey: imageKey,
       publicationdate: product.publicationdate,
-      active: product.active
+      active: product.active,
     };
 
     await productsRepository.updateProduct(updatedProduct);

@@ -14,15 +14,22 @@ export async function activateProduct(formData: FormData) {
     const id = String(formData.get('id'))
     const productsRepository = new ProductsRepository()
     try{
-        productsRepository.changeProductActiveStatus(id,true)
+        const {updatedRows} =await productsRepository.changeProductActiveStatus(id,true)
         revalidatePath('/')
+        
+        if(updatedRows == 0){
+            return {
+                success:false,
+                msg: "Product id not fount"
+            }
+        }
         return{
             success:true
         }
     }
     catch(error){
         return{
-            mgs: "Error activating product",
+            msg: "Error activating product",
             success:false
         }
     }
