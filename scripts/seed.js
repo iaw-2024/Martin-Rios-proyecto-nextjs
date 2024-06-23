@@ -5,7 +5,8 @@ const { v4: uuidv4 } = require('uuid');
 const users = [
   { name: 'John Doe', email: 'john.doe@example.com', password: 'password123', role: "user" },
   { name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password456', role: "user" },
-  { name: 'Bob Johnson', email: 'bob.johnson@example.com', password: 'password789', role: "admin" }
+  { name: 'Bob Johnson', email: 'bob.johnson@example.com', password: 'password789', role: "admin" },
+  { name: 'Guest User', email: 'guest@example.com', password: '', role: "guest" }
 ];
 const carts = [
   { username: 'John Doe', totalPrice: 0.00, mercadoPagoID: 'MP123456' },
@@ -158,7 +159,7 @@ async function seedSales(client) {
     console.log(`Tabla "sales_orders" creada`);
 
     const usersResult = await client.query('SELECT id, name FROM users WHERE name IN ($1, $2)', ['John Doe', 'Jane Smith']);
-    const users = usersResult.rows.map(row => ({id:row.id, name:row.name}));
+    const users = usersResult.rows.map(row => ({ id: row.id, name: row.name }));
 
     const productsResult = await client.query('SELECT id, productname, price FROM products');
     const products = productsResult.rows.map(row => ({ id: row.id, name: row.productname, price: row.price }));
@@ -195,7 +196,7 @@ async function seedSales(client) {
         INSERT INTO sales (userID, username, totalPrice, totalProducts, mercadoPagoID)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING id;
-      `, [sale.userID,sale.username, sale.totalPrice, sale.totalProducts, sale.mercadoPagoID]);
+      `, [sale.userID, sale.username, sale.totalPrice, sale.totalProducts, sale.mercadoPagoID]);
       const saleID = saleResult.rows[0].id;
 
       await Promise.all(sale.products.map(async product => {
@@ -234,11 +235,11 @@ async function seedOrderItems(client) {
     `);
     console.log("Tabla orderItems creada");
 
-    } 
-    catch (error)  {
-        console.error('Error al insertar elementos de orden:', error);
-        throw error;
-    }
+  }
+  catch (error) {
+    console.error('Error al insertar elementos de orden:', error);
+    throw error;
+  }
 }
 
 async function main() {

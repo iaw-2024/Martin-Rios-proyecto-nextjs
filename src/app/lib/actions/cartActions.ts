@@ -1,8 +1,10 @@
-'use server'
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import CartsRepository from '../Repositories/CartsRepository';
 import OrderItemsRepository from '../Repositories/OrdersRepository';
+import { OrderItem } from '../Entities/Order';
+import { Product } from '../Entities/Product';
 
 const cartsRepository = new CartsRepository();
 const orderItemsRepository = new OrderItemsRepository();

@@ -62,6 +62,16 @@ class UsersRepository {
         throw new Error('Failed to fetch users.');
       }
     }
+
+    async getUsersByName(userName: string): Promise<User> {
+      try {
+        const query = await sql<User>`SELECT * FROM users WHERE name = ${userName}`;
+        return query.rows[0];
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        throw new Error('Failed to fetch users.');
+      }
+    }
   }
   
   export default UsersRepository;

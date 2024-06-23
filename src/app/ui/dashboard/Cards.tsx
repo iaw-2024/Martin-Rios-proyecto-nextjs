@@ -14,7 +14,7 @@ const CardWrapper = ({ product, userID }: { product: Product, userID: string | u
         <div>
           <div className="font-bold text-xl mb-2">{product.productname}</div>
           <p className="text-gray-700 text-base mb-2">${product.price}</p>
-          <ViewProductDetails product={product} userID={userID}/>
+          <ViewProductDetails product={product}/>
           <div className="pt-3">
             <AddToCartButton product={product} userID={userID} />
           </div>

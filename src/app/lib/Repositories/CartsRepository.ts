@@ -64,13 +64,13 @@ class CartsRepository {
     }
   }
 
-  async getCartByUserId(userId: string): Promise<Cart | undefined> {
+  async getCartByUserId(userID: string): Promise<Cart | undefined> {
     try {
-      const query = await sql<Cart>`SELECT * FROM carts WHERE userID = ${userId} LIMIT 1`;
+      const query = await sql<Cart>`SELECT * FROM carts WHERE userID = ${userID} LIMIT 1`;
       return query.rows[0];
     } catch (error) {
-      console.error(`Failed to fetch cart for user with ID ${userId}:`, error);
-      throw new Error(`Failed to fetch cart for user with ID ${userId}.`);
+      console.error(`Failed to fetch cart for user with ID ${userID}:`, error);
+      throw new Error(`Failed to fetch cart for user with ID ${userID}.`);
     }
   }
 }

@@ -21,7 +21,7 @@ export default async function DashboardPage({
 
   const productsRepository = new ProductsRepository();
   const session: Session | null = await getServerSession(authOptions);
-
+  
   const ITEMS_PER_PAGE = 6;
 
   const query = searchParams?.query || '';

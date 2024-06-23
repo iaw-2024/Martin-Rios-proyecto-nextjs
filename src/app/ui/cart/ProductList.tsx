@@ -6,50 +6,104 @@ import CartWrapper from './CartCard';
 import { Product } from '@/app/lib/Entities/Product';
 import { OrderItem } from '@/app/lib/Entities/Order';
 import { removeProduct, increaseQuantity, decreaseQuantity, clearCart } from './../../lib/actions/cartActions';
+import { LocalCart } from '@/app/lib/Entities/LocalCart';
 
-export function ProductList({ cartProducts }: { cartProducts: (OrderItem & Product)[] }) {
+export function ProductList({ cartProducts, isLogged }: { cartProducts: (OrderItem & Product)[], isLogged: boolean }) {
 
     const [products, setProducts] = useState<(OrderItem & Product)[]>(cartProducts || []);
     const [cartId, setCartId] = useState<string>('');
 
     useEffect(() => {
-        if (cartProducts.length > 0) {
-            setCartId(cartProducts[0].cartid);
+        if (isLogged) {
+            if (cartProducts.length > 0) {
+                setCartId(cartProducts[0].cartid);
+            }
+        } else {    //  ??????
+            if (cartProducts.length > 0){
+                setCartId(cartProducts[0].cartid)
+            }
         }
     }, [cartProducts]);
 
     const handleRemoveProduct = async (orderitemid: string) => {
-        const handlerResult = await removeProduct(orderitemid, cartId);
-        if (handlerResult.success) {
-            const updatedProducts = products.filter(product => product.orderitemid !== orderitemid);
-            setProducts(updatedProducts);
+        if (isLogged) {
+            const handlerResult = await removeProduct(orderitemid, cartId);
+            if (handlerResult.success) {
+                const updatedProducts = products.filter(product => product.orderitemid !== orderitemid);
+                setProducts(updatedProducts);
+            }
+        }
+        else {
+            const cartString = localStorage.getItem('cart');
+            if (cartString) {
+                const cart: LocalCart = JSON.parse(cartString);
+                const productToUpdate = cart.products.find((product) => product.productid !== orderitemid);
+                if (productToUpdate) {
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                }
+            }
         }
     };
 
     const handleIncreaseQuantity = async (orderitemid: string) => {
-        const handlerResult = await increaseQuantity(orderitemid, cartId);
-        if (handlerResult.success) {
-            const updatedProducts = products.map(product =>
-                product.orderitemid === orderitemid ? { ...product, quantity: product.quantity + 1 } : product
-            );
-            setProducts(updatedProducts);
+        if (isLogged) {
+            const handlerResult = await increaseQuantity(orderitemid, cartId);
+            if (handlerResult.success) {
+                const updatedProducts = products.map(product =>
+                    product.orderitemid === orderitemid ? { ...product, quantity: product.quantity + 1 } : product
+                );
+                setProducts(updatedProducts);
+            }
+        }
+        else {
+            const cartString = localStorage.getItem('cart');
+            if (cartString) {
+                const cart: LocalCart = JSON.parse(cartString);
+                const productToUpdate = cart.products.find((product) => product.productid == orderitemid);
+                if (productToUpdate) {
+                    productToUpdate.quantity += 1;
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                }
+            }
         }
     };
 
     const handleDecreaseQuantity = async (orderitemid: string) => {
-        const handlerResult = await decreaseQuantity(orderitemid, cartId);
-        if (handlerResult.success) {
-            const updatedProducts = products.map(product =>
-                product.orderitemid === orderitemid && product.quantity > 1 ? { ...product, quantity: product.quantity - 1 } : product
-            );
-            setProducts(updatedProducts);
+        if (isLogged) {
+            const handlerResult = await decreaseQuantity(orderitemid, cartId);
+            if (handlerResult.success) {
+                const updatedProducts = products.map(product =>
+                    product.orderitemid === orderitemid && product.quantity > 1 ? { ...product, quantity: product.quantity - 1 } : product
+                );
+                setProducts(updatedProducts);
+            }
+        }
+        else {
+            const cartString = localStorage.getItem('cart');
+            if (cartString) {
+                const cart: LocalCart = JSON.parse(cartString);
+                const productToUpdate = cart.products.find((product) =>
+                    product.orderitemid === orderitemid && product.quantity > 1 ? { ...product, quantity: product.quantity - 1 } : product
+                );
+                if (productToUpdate) {
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                }
+            }
         }
     };
 
     const handleClearCart = async () => {
-        const handlerResult = await clearCart(cartId);
-        if (handlerResult.success) {
-            setProducts([]);
+        if (isLogged) {
+            const handlerResult = await clearCart(cartId);
+            if (handlerResult.success) {
+                setProducts([]);
+            }
+        }
+        else {
+            const cartString = localStorage.getItem('cart');
+            if (cartString) {
+                localStorage.clear
+            }
         }
     };
 
@@ -67,15 +121,21 @@ export function ProductList({ cartProducts }: { cartProducts: (OrderItem & Produ
                     {
                         products.length > 0
                             ? (
-                                products.map((product: (OrderItem & Product)) => (
+                                products.map((product: (OrderItem & Product)) => {
+                                    return(
                                     <CartWrapper
                                         key={product.id}
                                         product={product}
+                                        isLogged={isLogged}
+                                        //onLocalStorage={() => getCartProductFromLocalStorage(product.orderitemid)}
                                         onIncrease={() => handleIncreaseQuantity(product.orderitemid)}
                                         onDecrease={() => handleDecreaseQuantity(product.orderitemid)}
                                         onRemove={() => handleRemoveProduct(product.orderitemid)}
                                     />
-                                ))
+                                    )
+                                
+                                }
+                            )
                             ) : (
                                 <div className="text-center border-2 border-dashed p-6 grid grid-rows-2 border-gray-200 rounded-lg">
                                     <p className="text-2xl"></p>
@@ -98,9 +158,10 @@ export function ProductList({ cartProducts }: { cartProducts: (OrderItem & Produ
                         <p className="text-xl font-bold">Total:</p>
                         <p className="text-4xl">${products.reduce((acc, product) => acc + product.productprice * product.quantity, 0)}</p>
                     </div>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400 text-center">
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400 text-center">
                         <Link href="/buyProduct">
-                            Continuar compra
+                            Comprar
                         </Link>
                     </button>
                 </div>

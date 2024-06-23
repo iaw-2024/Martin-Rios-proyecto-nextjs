@@ -10,7 +10,7 @@ export async function addProductToLocalStorage(product: Product){
 
     if (existingProductIndex !== -1) {
         // Si el producto ya está en el carrito, incrementar la cantidad
-        currentCart[existingProductIndex].quantity += 1;
+        currentCart[existingProductIndex].quantity++;
     } else {
         // Si el producto no está en el carrito, agregarlo con una cantidad de 1
         currentCart.push({ product, quantity: 1 });

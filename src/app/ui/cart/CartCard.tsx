@@ -1,16 +1,22 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Product } from '@/app/lib/Entities/Product';
 import { OrderItem } from '@/app/lib/Entities/Order';
+import { getCartProductsFromLocalStorage } from '@/app/lib/actions/getProductFromLocalStorage';
 
 interface CartWrapperProps {
     product: (Product&OrderItem);
+    isLogged: boolean;
+    //onLocalStorage: (id: string) => void;
     onIncrease: (id: string) => void;
     onDecrease: (id: string) => void;
     onRemove: (id: string) => void;
 }
 
-const CartWrapper: React.FC<CartWrapperProps> = ({ product, onIncrease, onDecrease, onRemove }) => {
+const CartWrapper: React.FC<CartWrapperProps> = ({ product, isLogged, /*onLocalStorage,*/ onIncrease, onDecrease, onRemove }) => {
+
     return (
         <div className="max-w-sm rounded overflow-hidden shadow-lg bg-gray-200 m-4 flex hover:bg-gray-300">
             <Image src={product.imageurl} alt={product.productname} className="w-16 h-16 object-cover" width={64} height={64} />

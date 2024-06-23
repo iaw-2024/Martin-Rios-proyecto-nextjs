@@ -2,6 +2,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/auth-config';
 import ProductsRepository from '@/app/lib/Repositories/ProductsRepository';
 import ProductDetails from '@/app/ui/dashboard/ProductDetails';
 import { getServerSession, Session } from 'next-auth';
+import { notFound } from 'next/navigation';
 
 
 const ProductDetailsPage = async ({
@@ -17,6 +18,10 @@ const ProductDetailsPage = async ({
     const productsRepository = new ProductsRepository()
 
     const product = await productsRepository.getProductById(params.productId)
+    
+    if(!product) {
+      notFound();
+    }
     
   return (
     <div>

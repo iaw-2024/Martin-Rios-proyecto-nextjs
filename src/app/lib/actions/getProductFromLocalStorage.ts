@@ -1,5 +1,5 @@
 // lib/actions/getCartProductsFromLocalStorage.ts
-
+"use server"
 import { OrderItem } from "../Entities/Order";
 import { Product } from "../Entities/Product";
 
@@ -7,7 +7,7 @@ export const getCartProductsFromLocalStorage = (): (OrderItem & Product)[] => {
   if (typeof window !== 'undefined') {
     const cartProducts = localStorage.getItem('cart');
     try {
-      if (cartProducts !== null) {
+      if (cartProducts) {
         const parsedCartProducts = JSON.parse(cartProducts);
         return parsedCartProducts;
       }
