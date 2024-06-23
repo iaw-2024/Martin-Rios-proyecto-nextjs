@@ -1,10 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import ProductsRepository from '@/app/lib/Repositories/ProductsRepository'
 import { NextResponse } from 'next/server';
  
 export async function GET(
-    req: NextApiRequest,
-    res: NextApiResponse
+    req: any
 ) {
     try {
         const producstRepository = new ProductsRepository()

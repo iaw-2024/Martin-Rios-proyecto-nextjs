@@ -14,7 +14,6 @@ import SearchBar from './dashboard/SearchBar';
 const NavBar  = async ()=>{
   
   const session:Session|null = await getServerSession(authOptions)
-  console.log(session)
   let AuthButton = (session)? 
   <LogoutButton></LogoutButton>:
   <LoginButton></LoginButton>

@@ -1,21 +1,30 @@
-import { withAuth } from "next-auth/middleware";
-import { NextRequest } from "next/server";
 
-export default withAuth({
-    pages: {
-      signIn: '/login',
-      signOut: '/logout'
-    },
-    callbacks: {
-        authorized: ({ req, token}:{req:NextRequest, token:any}) => {
-            //TODO verificar bien el tema de la ruta, dentro del req estan las url
-            //también verificar el tema de las paginas de compra y demás
-            //console.log(req)
+import { getToken } from 'next-auth/jwt';
+import { NextResponse } from 'next/server';
 
-            console.log(token.role)
-            return token.role == 'admin'
-        }
-    }
-});
+export async function middleware(req:any) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-export const config = { matcher: ["/admin", "/login"] }
+  const { pathname } = req.nextUrl;
+
+  console.log(pathname)
+  if (token && pathname === '/login') {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+  if(pathname.startsWith('/admin') && !token ){
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+  if(pathname.startsWith('/admin') && token && token.role!='admin'){
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+  if(!pathname.startsWith('/admin') && token && token.role=='admin'){
+    return NextResponse.redirect(new URL('/admin', req.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/login','/','/admin/:path*'],
+};

@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import clsx from 'clsx';
-import { buyProductsLocal } from '@/app/lib/actions/buyProductsLocal';
+//import { buyProductsLocal } from '@/app/lib/actions/buyProductsLocal';
 
 interface BuyListProps {
     products: (OrderItem & Product)[];
@@ -64,9 +64,10 @@ export const BuyList: React.FC<BuyListProps> = ({ products, userId }) => {
 
             })
 
-            let result
+            let result = {success:false}
             if (userId == (null || undefined)) {
-                result = await buyProductsLocal(formData);
+                //TODO agregar la compra local 
+                //result = await buyProductsLocal(formData);
             }
             else {
                 result = await buyProducts(userId)

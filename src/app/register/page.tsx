@@ -1,4 +1,3 @@
-import { Description, Field, Fieldset, Input, Label, Legend, Select, Textarea } from '@headlessui/react'
 import clsx from 'clsx'
 
 export default function RegisterForm() {

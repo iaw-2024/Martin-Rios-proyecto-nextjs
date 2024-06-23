@@ -1,4 +1,4 @@
-'use server';
+/*'use server';
 
 import { OrderItem } from '../Entities/Order';
 import { Product } from '../Entities/Product';
@@ -135,3 +135,4 @@ async function processPayment(totalPrice: number): Promise<{ success: boolean, m
     // For demonstration, we assume the payment is always successful and return a mock ID
     return { success: true, mercadoPagoID: 'MercadoPagoID' };
 }
+*/

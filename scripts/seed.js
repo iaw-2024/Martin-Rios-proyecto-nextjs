@@ -161,6 +161,7 @@ async function seedSales(client) {
     const usersResult = await client.query('SELECT id, name FROM users WHERE name IN ($1, $2)', ['John Doe', 'Jane Smith']);
     const users = usersResult.rows.map(row => ({ id: row.id, name: row.name }));
 
+
     const productsResult = await client.query('SELECT id, productname, price FROM products');
     const products = productsResult.rows.map(row => ({ id: row.id, name: row.productname, price: row.price }));
 
@@ -234,12 +235,12 @@ async function seedOrderItems(client) {
       );
     `);
     console.log("Tabla orderItems creada");
-
   }
   catch (error) {
     console.error('Error al insertar elementos de orden:', error);
     throw error;
   }
+
 }
 
 async function main() {
