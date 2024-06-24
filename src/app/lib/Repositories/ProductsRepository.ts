@@ -123,6 +123,7 @@ class ProductsRepository {
     }
   }
 
+
   async changeProductActiveStatus(productId: string, active: boolean): Promise<{updatedRows:number}> {
     try {
       const result = await sql`
@@ -130,7 +131,6 @@ class ProductsRepository {
         SET active = ${active}
         WHERE id = ${productId}
       `;
-
       return {
         updatedRows: result.rowCount
       }

@@ -1,5 +1,4 @@
 import { sql } from '@vercel/postgres';
-import type { User } from '@/app/lib/Entities';
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcrypt';

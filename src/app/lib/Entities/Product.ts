@@ -8,4 +8,4 @@ export interface Product {
     publicationdate: Date;
     stock: number;
     active: boolean;
-  }
+}

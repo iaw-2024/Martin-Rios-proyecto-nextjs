@@ -1,6 +1,6 @@
 import { QueryResult } from '@vercel/postgres';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../Entities';
+import { User } from '../Entities/User';
 import { sql } from '@vercel/postgres';
 
 class UsersRepository {
@@ -57,6 +57,16 @@ class UsersRepository {
       try {
         const query = await sql<User>`SELECT * FROM users`;
         return query.rows;
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        throw new Error('Failed to fetch users.');
+      }
+    }
+
+    async getUsersByName(userName: string): Promise<User> {
+      try {
+        const query = await sql<User>`SELECT * FROM users WHERE name = ${userName}`;
+        return query.rows[0];
       } catch (error) {
         console.error('Failed to fetch users:', error);
         throw new Error('Failed to fetch users.');
