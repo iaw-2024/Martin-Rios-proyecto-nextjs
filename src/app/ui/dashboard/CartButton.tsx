@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ChevronDownIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import { Popover, PopoverButton, PopoverPanel, Transition } from "@headlessui/react";
 
+
 const CartButton = () => {
   return (
     <div className="flex justify-center pt-4">
@@ -29,8 +30,7 @@ const CartButton = () => {
                   <p className="font-semibold text-white">Buy products</p>
                 </a>
                 <a className="block rounded-lg py-2 px-3 transition hover:bg-white/5" href="#">
-                  <Link href="/cart">
-                    <p className="font-semibold text-white">Cart</p>
+                  <Link href="/cart">Carrito
                   </Link>
                 </a>
               </div>

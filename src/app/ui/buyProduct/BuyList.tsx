@@ -48,7 +48,7 @@ export const BuyList: React.FC<BuyListProps> = ({ products, userId }) => {
                 //userId recibido por parámetro desde page obteniendo el usuario especial??
 
                 //Campos orderItem
-                formData.append('orderId', product.orderitemid)
+                formData.append('orderId', product.id)
                 formData.append('cartId', product.cartid)
                 formData.append('date', product.dateadded.toISOString())
                 formData.append('quantity', String(product.quantity))

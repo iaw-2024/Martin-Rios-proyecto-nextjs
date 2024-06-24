@@ -15,8 +15,9 @@ function AddCartButton({ product, userID }: { product: Product, userID: string |
     const handleClick = () => {
         if (!userID) {
             addProductToLocalStorage(product);
-        } else
+        } else{
             addProductToCart(product, userID);
+        }
             setIsOpen(true)
     };
 

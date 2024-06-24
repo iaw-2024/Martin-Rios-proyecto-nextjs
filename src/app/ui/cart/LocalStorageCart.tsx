@@ -3,7 +3,7 @@
 import { OrderItem } from '@/app/lib/Entities/Order';
 import { Product } from '@/app/lib/Entities/Product';
 import { useEffect, useState } from 'react';
-import { ProductList } from './ProductList';
+import ProductList  from './ProductList';
 
 
 export function ClientCart() {
@@ -18,7 +18,7 @@ export function ClientCart() {
 
   return (
     <section className="w-full mb-2">
-      <ProductList cartProducts={cartProducts} isLogged={false}></ProductList>
+      <ProductList cartProducts={cartProducts} userId={undefined}></ProductList>
     </section>
   );
 }

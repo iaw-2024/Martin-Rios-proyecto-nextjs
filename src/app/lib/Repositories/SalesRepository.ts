@@ -14,12 +14,12 @@ class SalesRepository {
     }
   }
 
-  async createSale(userID: string, totalPrice: number, totalProducts:number, mercadoPagoID?: string): Promise<string> {
+  async createSale(userID: string, totalPrice: number, totalProducts:number, username:string = "", mercadoPagoID?: string): Promise<string> {
     try {
       const saleId = uuidv4();
       await sql`
-        INSERT INTO sales(id, userID, totalPrice, totalProducts, mercadoPagoID) 
-        VALUES (${saleId}, ${userID}, ${totalPrice}, ${totalProducts}, ${mercadoPagoID})
+        INSERT INTO sales(id, userID, totalPrice, totalProducts, mercadoPagoID, username) 
+        VALUES (${saleId}, ${userID}, ${totalPrice}, ${totalProducts}, ${mercadoPagoID}, ${username})
       `;
       return saleId;
     } catch (error) {

@@ -14,6 +14,16 @@ class OrderItemsRepository {
     }
   }
 
+  async getOrderByCartAndProductId(cartId: string, productId:string): Promise<OrderItem | undefined> {
+    try {
+      const query = await sql<OrderItem>`SELECT * FROM orderItems WHERE cartid = ${cartId} AND productid = ${productId}`;
+      return query.rows[0];
+    } catch (error) {
+      console.error(`Failed to fetch order item with ID ${productId}:`, error);
+      throw new Error(`Failed to fetch order item with ID ${productId}.`);
+    }
+  }
+
   async createOrderItem(
     cartID: string,
     productID: string,
@@ -39,6 +49,8 @@ class OrderItemsRepository {
     productPrice: number
   ): Promise<void> {
     try {
+      console.log(quantity)
+      console.log(orderItemId)
       await sql`
         UPDATE orderItems 
         SET quantity = ${quantity}, productPrice = ${productPrice} 
@@ -62,6 +74,18 @@ class OrderItemsRepository {
     }
   }
 
+  async deleteOrdersWithCartId(cartId: string): Promise<void> {
+    try {
+      await sql`
+        DELETE FROM orderItems 
+        WHERE cartid = ${cartId}
+      `;
+    } catch (error) {
+      console.error('Failed to delete order item:', error);
+      throw new Error('Failed to delete order item.');
+    }
+  }
+
   async getAllOrderItems(): Promise<OrderItem[]> {
     try {
       const query = await sql<OrderItem>`SELECT * FROM orderItems`;
@@ -76,7 +100,7 @@ class OrderItemsRepository {
     try {
       const query = await sql<(OrderItem & Product) >`
         SELECT 
-          orderItems.id AS orderItemId,
+          orderItems.id AS id,
           orderItems.cartID,
           orderItems.productID,
           orderItems.dateAdded,
@@ -92,6 +116,20 @@ class OrderItemsRepository {
           products.stock
         FROM orderItems
         INNER JOIN products ON orderItems.productID = products.id
+        WHERE orderItems.cartID = ${cartId}`;
+      return query.rows;
+    } catch (error) {
+      console.error(`Failed to fetch products for cart with ID ${cartId}:`, error);
+      throw new Error(`Failed to fetch products for cart with ID ${cartId}.`);
+    }
+  }
+
+  async getOrderItemsByCartId(cartId: string): Promise<(OrderItem & { productname: string })[]> {
+    try {
+      const query = await sql<(OrderItem & { productname: string })>`
+        SELECT orderItems.*, products.productName
+        FROM orderItems
+        JOIN products ON orderItems.productID = products.id
         WHERE orderItems.cartID = ${cartId}`;
       return query.rows;
     } catch (error) {

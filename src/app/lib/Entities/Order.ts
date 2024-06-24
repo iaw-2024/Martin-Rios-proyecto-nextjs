@@ -1,5 +1,5 @@
 export interface OrderItem {
-    orderitemid: string;
+    id: string;
     cartid: string;
     productid: string;
     dateadded: Date;

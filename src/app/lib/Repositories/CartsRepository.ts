@@ -73,6 +73,18 @@ class CartsRepository {
       throw new Error(`Failed to fetch cart for user with ID ${userID}.`);
     }
   }
+
+  async addMercadopagoId(cartId:string,preferenceId:string){
+    try{
+      const query = await sql<Cart>` 
+        UPDATE carts 
+        SET mercadopagoid = ${cartId}, mercadoPagoID = ${preferenceId} 
+        WHERE id = ${cartId}`;
+      return query.rows[0];
+    }catch(err){
+      throw new Error(`Failed to update cart`);
+    }
+  }
 }
 
 export default CartsRepository;

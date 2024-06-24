@@ -3,7 +3,6 @@ import { Product } from '@/app/lib/Entities/Product';
 export async function addProductToLocalStorage(product: Product){
     // Obtener el carrito actual del local storage
     const currentCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    console.log("CURRENT CATR:",currentCart)
 
     // Verificar si el producto ya está en el carrito
     const existingProductIndex = currentCart.findIndex((item: Product) => item.id === product.id);
@@ -18,5 +17,4 @@ export async function addProductToLocalStorage(product: Product){
 
     // Guardar el carrito actualizado en el local storage
     localStorage.setItem('cart', JSON.stringify(currentCart));
-    console.log(localStorage.getItem('cart'))
 };

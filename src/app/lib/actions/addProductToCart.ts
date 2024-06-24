@@ -5,7 +5,6 @@ import { Product } from '../Entities/Product';
 import CartsRepository from '../Repositories/CartsRepository';
 import OrderItemsRepository from '../Repositories/OrdersRepository';
 import { revalidatePath } from 'next/cache';
-import { OrderItem } from '../Entities/Order';
 
 cloudinary.config({
     cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -26,16 +25,16 @@ export async function addProductToCart(product: Product, userID: string) {
                 cartId = await cartsRepository.createCart(userID, product.price, "abc");
                 await ordersRepository.createOrderItem(cartId, product.id, 1, product.price);
             } else {
-                const orderItems = await ordersRepository.getOrdersByCartId(cart.id);
-                orderItems.map((order: (OrderItem)) => {
-                    if (order.productid == product.id) {
-                        const quantityUpdated = order.quantity + 1;
-                        ordersRepository.updateOrderItem(order.orderitemid, quantityUpdated, order.productprice)
-                    } else {
-                        ordersRepository.createOrderItem(cart.id, product.id, 1, product.price);
-                    }
+                console.log(cart.id, product.id)
+                const orderItem = await ordersRepository.getOrderByCartAndProductId(cart.id,product.id)
+
+                if(orderItem){
+                    console.log("acutalizando")
+                    ordersRepository.updateOrderItem(orderItem.id, orderItem.quantity+1, orderItem.productprice)
+                }else{
+                    console.log("creando nuevo order item")
+                    ordersRepository.createOrderItem(cart.id, product.id, 1, product.price);
                 }
-                )
                 const updatedCartTotal = parseFloat(cart.totalprice + "") + parseFloat(product.price + "");
                 cartsRepository.updateCart(cart.id, updatedCartTotal, "abc");
             }
