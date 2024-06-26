@@ -21,9 +21,13 @@ export async function middleware(req:any) {
     return NextResponse.redirect(new URL('/admin', req.url));
   }
 
+  if(pathname === '/buyProduct/buys' && !token){
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/login','/','/admin/:path*'],
+  matcher: ['/login','/','/admin/:path*','/buyProduct/:path*'],
 };

@@ -40,6 +40,16 @@ class SalesRepository {
     }
   }
 
+  async getAllSales(): Promise<Sale[]> {
+    try {
+      const query = await sql<Sale>`SELECT * FROM sales`;
+      return query.rows;
+    } catch (error) {
+      console.error('Failed to fetch sales:', error);
+      throw new Error('Failed to fetch sales.');
+    }
+  }
+
   async getAllSalesPaginated(
     page: number,
     pageSize: number,

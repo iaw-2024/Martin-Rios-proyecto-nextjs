@@ -10,6 +10,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { getCartProductsFromLocalStorage } from "../lib/actions/getProductFromLocalStorage";
 import UsersRepository from "../lib/Repositories/Usersrepository";
+import { ClientCart } from "../ui/cart/LocalStorageCart";
 
 export default async function CartPage() {
   noStore();
@@ -28,12 +29,14 @@ export default async function CartPage() {
   }else{
     cartProducts = getCartProductsFromLocalStorage()
   }
-
+  //console.log("QUE HAY?",cartProducts) 
+  //<ClientCart></ClientCart>
+//<ProductList cartProducts={cartProducts} userId={session?.user.id}></ProductList>
   return (
     <Fragment>
       <h1 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">Tu carrito</h1>
       <section className="w-full mb-2">
-          <ProductList cartProducts={cartProducts} userId={session?.user.id}></ProductList>
+      <ProductList cartProducts={cartProducts} userId={session?.user.id}></ProductList>
       </section>
     </Fragment>
   )

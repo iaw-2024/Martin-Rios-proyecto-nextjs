@@ -8,12 +8,17 @@ import { OrderItem } from '@/app/lib/Entities/Order';
 import { removeProduct, increaseQuantity, decreaseQuantity, clearCart } from './../../lib/actions/cartActions';
 import { LocalCart } from '@/app/lib/Entities/LocalCart';
 import { buyProducts } from '@/app/lib/actions/buyProducts';
+import { buyProductsLocal } from '@/app/lib/actions/buyProductsLocal';
 import { useRouter } from 'next/navigation';
 
-export default function ProductList({ cartProducts, userId }: { cartProducts: (OrderItem & Product)[],userId:string |undefined }) {
+export default function ProductList({ cartProducts, userId }: { cartProducts: (OrderItem & Product)[], userId: string | undefined }) {
+
+   // console.log("Y ACA QUE LLEGO???", cartProducts)
+    //console.log("QUE HAY aca??", JSON.stringify(cartProducts[0]))
+    //console.log("PUEDO VER ALGUNA PROPIEDAD ASI???", cartProducts[0].productname, cartProducts[0].productprice)
 
     const router = useRouter();
-    const isLogged= userId!=undefined
+    const isLogged = userId != undefined
 
     const [products, setProducts] = useState<(OrderItem & Product)[]>(cartProducts || []);
     const [cartId, setCartId] = useState<string>('');
@@ -24,7 +29,7 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
                 setCartId(cartProducts[0].cartid);
             }
         } else {
-            if (cartProducts.length > 0){
+            if (cartProducts.length > 0) {
                 setCartId(cartProducts[0].cartid)
             }
         }
@@ -118,27 +123,29 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
             const formData: FormData = new FormData()
 
             products.map((product: (OrderItem & Product)) => {
-                //userId recibido por parámetro desde page obteniendo el usuario especial??
-
                 //Campos orderItem
                 formData.append('orderId', product.id)
                 formData.append('cartId', product.cartid)
                 formData.append('date', product.dateadded.toISOString())
                 formData.append('quantity', String(product.quantity))
-                formData.append('totalPrice', String(product.price))
+                formData.append('orderItemPrice', String(product.productprice))
                 //Campos Product
                 formData.append('productId', product.productid)
                 formData.append('productName', product.productname)
                 formData.append('description', product.description)
                 formData.append('image', product.imageurl)
-                formData.append('productPrice', String(product.productprice))
+                formData.append('productPrice', String(product.price))
                 formData.append('publicationDate', product.publicationdate.toISOString())
                 formData.append('productStock', String(product.stock))
+                formData.append('productActive', String(product.active))
 
             })
 
+            console.log("FORM DATA!!: ", formData);
+
+            let result
             if (isLogged) {
-                const result = await buyProducts(userId)
+                result = await buyProducts(userId)
                 if (result.success && result.redirectUrl) {
                     router.push(result.redirectUrl);
                 } else {
@@ -147,13 +154,18 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
             }
             else {
                 //TODO agregar la compra local 
-                //result = await buyProductsLocal(formData);
-                
+                result = await buyProductsLocal(formData);
+                if (result.success && result.redirectUrl) {
+                    router.push(result.redirectUrl);
+                } else {
+                    console.error('Error during purchase:');
+                }
+
             }
 
         } catch (error) {
             console.error('Error al enviar datos:', error);
-        } 
+        }
     };
 
     return (
@@ -205,14 +217,16 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
                     </div>
                     <div className="flex justify-between mt-4 border-t pt-6">
                         <p className="text-xl font-bold">Total:</p>
-                        <p className="text-4xl">${products.reduce((acc, product) => acc + product.productprice * product.quantity, 0)}</p>
+                        <p className="text-4xl">${products.reduce((acc, product) => acc + product.productprice * product.quantity, 0).toFixed(2)}</p>
                     </div>
-                    <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400 text-center"
-                        onClick={handleSubmit}
+                    {products.length > 0 && (
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400 text-center"
+                            onClick={handleSubmit}
                         >
                             Comprar
-                    </button>
+                        </button>
+                    )}
                 </div>
             </div>
         </Fragment>
