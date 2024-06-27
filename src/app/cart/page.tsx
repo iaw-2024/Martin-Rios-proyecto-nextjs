@@ -7,11 +7,6 @@ import OrderItemsRepository from "../lib/Repositories/OrdersRepository";
 import { OrderItem } from "../lib/Entities/Order";
 import { unstable_noStore as noStore } from 'next/cache';
 import { Fragment } from "react";
-import Link from "next/link";
-import { getCartProductsFromLocalStorage } from "../lib/actions/getProductFromLocalStorage";
-import UsersRepository from "../lib/Repositories/Usersrepository";
-import { ClientCart } from "../ui/cart/LocalStorageCart";
-
 export default async function CartPage() {
   noStore();
   const session: Session | null = await getServerSession(authOptions)
@@ -25,13 +20,8 @@ export default async function CartPage() {
     let cart = await cartsRepository.getCartByUserId(session.user.id)
     if (!!cart)
       cartProducts = await ordersRepository.getOrdersByCartId(cart.id)
-
-  }else{
-    cartProducts = getCartProductsFromLocalStorage()
   }
-  //console.log("QUE HAY?",cartProducts) 
-  //<ClientCart></ClientCart>
-//<ProductList cartProducts={cartProducts} userId={session?.user.id}></ProductList>
+  
   return (
     <Fragment>
       <h1 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">Tu carrito</h1>

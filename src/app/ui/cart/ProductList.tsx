@@ -6,16 +6,12 @@ import CartWrapper from './CartCard';
 import { Product } from '@/app/lib/Entities/Product';
 import { OrderItem } from '@/app/lib/Entities/Order';
 import { removeProduct, increaseQuantity, decreaseQuantity, clearCart } from './../../lib/actions/cartActions';
-import { LocalCart } from '@/app/lib/Entities/LocalCart';
 import { buyProducts } from '@/app/lib/actions/buyProducts';
 import { buyProductsLocal } from '@/app/lib/actions/buyProductsLocal';
 import { useRouter } from 'next/navigation';
+import { getCartProductsFromLocalStorage } from '@/app/lib/actions/getProductFromLocalStorage';
 
 export default function ProductList({ cartProducts, userId }: { cartProducts: (OrderItem & Product)[], userId: string | undefined }) {
-
-   // console.log("Y ACA QUE LLEGO???", cartProducts)
-    //console.log("QUE HAY aca??", JSON.stringify(cartProducts[0]))
-    //console.log("PUEDO VER ALGUNA PROPIEDAD ASI???", cartProducts[0].productname, cartProducts[0].productprice)
 
     const router = useRouter();
     const isLogged = userId != undefined
@@ -29,13 +25,13 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
                 setCartId(cartProducts[0].cartid);
             }
         } else {
-            if (cartProducts.length > 0) {
-                setCartId(cartProducts[0].cartid)
-            }
+            cartProducts = getCartProductsFromLocalStorage();
+            setProducts(cartProducts);
         }
-    }, [cartProducts]);
 
-    const handleRemoveProduct = async (orderitemid: string) => {
+    }, [cartProducts])
+
+    const handleRemoveProduct = async (orderitemid: string, productid:string) => {
         if (isLogged) {
             const handlerResult = await removeProduct(orderitemid, cartId);
             if (handlerResult.success) {
@@ -46,21 +42,20 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
         else {
             const cartString = localStorage.getItem('cart');
             if (cartString) {
-                const cart: LocalCart = JSON.parse(cartString);
-                const productToUpdate = cart.products.find((product) => product.productid !== orderitemid);
-                if (productToUpdate) {
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                }
+                const cart: (OrderItem & Product)[] = JSON.parse(cartString);
+                const updatedCart = cart.filter(item => item.productid !== productid);
+                localStorage.setItem('cart', JSON.stringify(updatedCart));
+                setProducts(updatedCart);
             }
         }
     };
 
-    const handleIncreaseQuantity = async (orderitemid: string) => {
+    const handleIncreaseQuantity = async (orderitemid: string, productid:string) => {
         if (isLogged) {
             const handlerResult = await increaseQuantity(orderitemid, cartId);
             if (handlerResult.success) {
                 const updatedProducts = products.map(product =>
-                    product.id === orderitemid ? { ...product, quantity: product.quantity + 1 } : product
+                    product.id == orderitemid ? { ...product, quantity: product.quantity + 1 } : product
                 );
                 setProducts(updatedProducts);
             }
@@ -68,22 +63,24 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
         else {
             const cartString = localStorage.getItem('cart');
             if (cartString) {
-                const cart: LocalCart = JSON.parse(cartString);
-                const productToUpdate = cart.products.find((product) => product.productid == orderitemid);
-                if (productToUpdate) {
-                    productToUpdate.quantity += 1;
+                const cart: (OrderItem & Product)[] = JSON.parse(cartString);
+                const existingProductIndex = cart.findIndex((item: (OrderItem & Product)) => item.productid === productid);
+                if (existingProductIndex !== -1) {
+                    cart[existingProductIndex].quantity++;
                     localStorage.setItem('cart', JSON.stringify(cart));
-                }
+                    setProducts(cart);
+                };
+
             }
         }
     };
 
-    const handleDecreaseQuantity = async (orderitemid: string) => {
+    const handleDecreaseQuantity = async (orderitemid: string, productid:string) => {
         if (isLogged) {
             const handlerResult = await decreaseQuantity(orderitemid, cartId);
             if (handlerResult.success) {
                 const updatedProducts = products.map(product =>
-                    product.id === orderitemid && product.quantity > 1 ? { ...product, quantity: product.quantity - 1 } : product
+                    product.id == orderitemid && product.quantity > 1 ? { ...product, quantity: product.quantity - 1 } : product
                 );
                 setProducts(updatedProducts);
             }
@@ -91,13 +88,14 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
         else {
             const cartString = localStorage.getItem('cart');
             if (cartString) {
-                const cart: LocalCart = JSON.parse(cartString);
-                const productToUpdate = cart.products.find((product) =>
-                    product.id === orderitemid && product.quantity > 1 ? { ...product, quantity: product.quantity - 1 } : product
-                );
-                if (productToUpdate) {
+                const cart: (OrderItem & Product)[] = JSON.parse(cartString);
+                const existingProductIndex = cart.findIndex((item: (OrderItem & Product)) => item.productid == productid && item.quantity > 1);
+                if (existingProductIndex !== -1) {
+                    cart[existingProductIndex].quantity--;
                     localStorage.setItem('cart', JSON.stringify(cart));
-                }
+                    setProducts(cart);
+                };
+
             }
         }
     };
@@ -112,7 +110,8 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
         else {
             const cartString = localStorage.getItem('cart');
             if (cartString) {
-                localStorage.clear
+                localStorage.removeItem('cart')
+                setProducts([]);
             }
         }
     };
@@ -126,7 +125,7 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
                 //Campos orderItem
                 formData.append('orderId', product.id)
                 formData.append('cartId', product.cartid)
-                formData.append('date', product.dateadded.toISOString())
+                formData.append('date', product.dateadded.toString())
                 formData.append('quantity', String(product.quantity))
                 formData.append('orderItemPrice', String(product.productprice))
                 //Campos Product
@@ -135,13 +134,11 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
                 formData.append('description', product.description)
                 formData.append('image', product.imageurl)
                 formData.append('productPrice', String(product.price))
-                formData.append('publicationDate', product.publicationdate.toISOString())
+                formData.append('publicationDate', product.publicationdate.toString())
                 formData.append('productStock', String(product.stock))
                 formData.append('productActive', String(product.active))
 
             })
-
-            console.log("FORM DATA!!: ", formData);
 
             let result
             if (isLogged) {
@@ -154,9 +151,10 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
             }
             else {
                 //TODO agregar la compra local 
-                result = await buyProductsLocal(formData);
+               result = await buyProductsLocal(products);
                 if (result.success && result.redirectUrl) {
-                    router.push(result.redirectUrl);
+                    //router.push(result.redirectUrl); 
+                    console.log("compra exitosa")
                 } else {
                     console.error('Error during purchase:');
                 }
@@ -181,9 +179,9 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
                                             key={product.id}
                                             product={product}
                                             isLogged={isLogged}
-                                            onIncrease={() => handleIncreaseQuantity(product.id)}
-                                            onDecrease={() => handleDecreaseQuantity(product.id)}
-                                            onRemove={() => handleRemoveProduct(product.id)}
+                                            onIncrease={() => handleIncreaseQuantity(product.id, product.productid)}
+                                            onDecrease={() => handleDecreaseQuantity(product.id, product.productid)}
+                                            onRemove={() => handleRemoveProduct(product.id, product.productid)}
                                         />
                                     ))}
                                     <div className="flex-1 flex mt-4">
