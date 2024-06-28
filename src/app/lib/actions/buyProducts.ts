@@ -39,7 +39,6 @@ export async function buyProducts(userID: string): Promise<{ success: boolean, r
                     unit_price: parseFloat(orderItem.productprice+"")
                 }
             })
-            console.log(items)
             const preference = await (new Preference(client)).create(
                 {
                 body: {
@@ -54,7 +53,6 @@ export async function buyProducts(userID: string): Promise<{ success: boolean, r
                 },
                 
             })
-            console.log(preference)
             return {
                 success: true,
                 redirectUrl: preference.sandbox_init_point

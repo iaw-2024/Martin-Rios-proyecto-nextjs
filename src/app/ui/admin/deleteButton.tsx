@@ -18,13 +18,7 @@ const DeleteButton = ({data}:{data:{id:string, imageId:string}}) => {
             form.append('id', id)
             form.append('imageId', imageId)
 
-            const result = await deactivateProduct(form)
-            if(result.success){
-                console.log("todo bien")
-            }
-            else{
-                console.log("algo paso")
-            }
+            deactivateProduct(form)
         }
         catch(error){
 

@@ -153,7 +153,6 @@ export default function ProductList({ cartProducts, userId }: { cartProducts: (O
                result = await buyProductsLocal(products);
                 if (result.success && result.redirectUrl) {
                     router.push(result.redirectUrl); 
-                    console.log("compra exitosa")
                 } else {
                     console.error('Error during purchase:');
                 }

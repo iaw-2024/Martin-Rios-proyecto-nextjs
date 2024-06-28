@@ -16,12 +16,8 @@ const StockModal = ({ data }:{data:{id:string, currentStock:number}}) => {
 
   const handleSubmit = async () => {
     try {
-       const result = await updateStock({ productId:id, newStock:stock });
-       if (result.success) {
-         console.log("Stock updated successfully");
-       } else {
-         console.log("Error updating stock");
-       }
+       await updateStock({ productId:id, newStock:stock });
+
     } catch (error) {
       console.error("Error:", error);
     }

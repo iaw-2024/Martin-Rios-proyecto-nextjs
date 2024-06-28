@@ -23,7 +23,7 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md px-4">
-      <form  onSubmit={handleSubmit} className="space-y-6 rounded-xl bg-white p-6 sm:p-10">
+      <form  className="space-y-6 rounded-xl bg-white p-6 sm:p-10">
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-800">Login</h2>
           <p className="mt-2 text-sm text-gray-600">Bienvenido de nuevo! Por favor, ingresa tus datos para continuar comprando.</p>
