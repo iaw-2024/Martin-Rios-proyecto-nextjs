@@ -14,12 +14,12 @@ class SalesOrdersRepository {
     }
   }
 
-  async createOrder(saleID: string, productID: string, quantity: number, price: number): Promise<string> {
+  async createOrder(saleID: string, productID: string, quantity: number, price: number, productname:string): Promise<string> {
     try {
       const orderId = uuidv4();
       await sql`
-        INSERT INTO sales_orders(id, saleID, productID, quantity, price) 
-        VALUES (${orderId}, ${saleID}, ${productID}, ${quantity}, ${price})
+        INSERT INTO sales_orders(id, saleID, productID, quantity, price, productname) 
+        VALUES (${orderId}, ${saleID}, ${productID}, ${quantity}, ${price}, ${productname})
       `;
       return orderId;
     } catch (error) {

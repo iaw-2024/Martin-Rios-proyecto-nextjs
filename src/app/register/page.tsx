@@ -1,9 +1,30 @@
+'use client'
 import clsx from 'clsx'
+import { FormEvent } from 'react';
+import { registerUser } from '../lib/actions/registerUser';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterForm() {
+  const router = useRouter()
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email')?.toString() || ""
+    const username = formData.get('username')?.toString() || ""
+    const password = formData.get('password')?.toString() || ""
+    const response = await registerUser(
+      email,
+      username,
+      password
+    );
+    if(response.success){
+      router.push("/login")
+    }
+
+  };
   return (
     <div className="w-full max-w-md px-4">
-      <form className="space-y-6 rounded-xl bg-white p-6 sm:p-10">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl bg-white p-6 sm:p-10">
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-800">Register</h2>
           <p className="mt-2 text-sm text-gray-600">Únete a nosotros! Por favor, completa los siguientes campos para crear tu cuenta.</p>

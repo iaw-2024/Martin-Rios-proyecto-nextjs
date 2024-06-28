@@ -123,6 +123,7 @@ class ProductsRepository {
     }
   }
 
+
   async changeProductActiveStatus(productId: string, active: boolean): Promise<{updatedRows:number}> {
     try {
       const result = await sql`
@@ -131,6 +132,28 @@ class ProductsRepository {
         WHERE id = ${productId}
       `;
 
+      if(!active){
+        const result2 = await sql`
+          DELETE FROM orderitems
+          WHERE productid = ${productId}
+        `;  
+      }
+      return {
+        updatedRows: result.rowCount
+      }
+    } catch (error) {
+      console.error(`Failed to change active status for product with ID ${productId}:`, error);
+      throw new Error(`Failed to change active status for product with ID ${productId}.`);
+    }
+  }
+
+  async updateStock(productId: string, newStock:number): Promise<{updatedRows:number}> {
+    try {
+      const result = await sql`
+        UPDATE products
+        SET stock = ${newStock}
+        WHERE id = ${productId}
+      `;
       return {
         updatedRows: result.rowCount
       }
@@ -150,6 +173,37 @@ class ProductsRepository {
     } catch (error) {
       console.error('Failed to fetch out-of-stock products:', error);
       throw new Error('Failed to fetch out-of-stock products.');
+    }
+  }
+
+  async getRecentlyAddedProducts(): Promise<Product[]> {
+    try {
+      const query = await sql<Product>`
+        SELECT * FROM products
+        ORDER BY publicationdate DESC
+        LIMIT 3
+      `;
+      return query.rows;
+    } catch (error) {
+      console.error('Failed to fetch recently added products:', error);
+      throw new Error('Failed to fetch recently added products.');
+    }
+  }
+
+  async getTopSellingProducts(): Promise<Product[]> {
+    try {
+      const query = await sql<Product>`
+        SELECT p.*, SUM(so.quantity) as total_sold
+        FROM products p
+        JOIN sales_orders so ON p.id = so.productID
+        GROUP BY p.id
+        ORDER BY total_sold DESC
+        LIMIT 3
+      `;
+      return query.rows;
+    } catch (error) {
+      console.error('Failed to fetch top selling products:', error);
+      throw new Error('Failed to fetch top selling products.');
     }
   }
 

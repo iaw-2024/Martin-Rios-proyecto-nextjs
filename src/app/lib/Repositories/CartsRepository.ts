@@ -1,16 +1,11 @@
 import { sql } from '@vercel/postgres';
 import { v4 as uuidv4 } from 'uuid';
+import { Cart } from '../Entities/Cart';
 
-interface Cart {
-  id: number;
-  userID: string;
-  totalPrice: number;
-  creationDate: Date;
-  mercadoPagoID?: string;
-}
+
 
 class CartsRepository {
-  async getCartById(cartId: number): Promise<Cart | undefined> {
+  async getCartById(cartId: string): Promise<Cart | undefined> {
     try {
       const query = await sql<Cart>`SELECT * FROM carts WHERE id = ${cartId}`;
       return query.rows[0];
@@ -20,7 +15,7 @@ class CartsRepository {
     }
   }
 
-  async createCart(userID: string, totalPrice: number, mercadoPagoID?: string): Promise<number> {
+  async createCart(userID: string, totalPrice: number, mercadoPagoID?: string): Promise<string> {
     try {
       const query = await sql`
         INSERT INTO carts(userID, totalPrice, mercadoPagoID) 
@@ -34,7 +29,7 @@ class CartsRepository {
     }
   }
 
-  async updateCart(cartId: number, totalPrice: number, mercadoPagoID?: string): Promise<void> {
+  async updateCart(cartId: string, totalPrice: number, mercadoPagoID?: string): Promise<void> {
     try {
       await sql`
         UPDATE carts 
@@ -47,7 +42,7 @@ class CartsRepository {
     }
   }
 
-  async deleteCart(cartId: number): Promise<void> {
+  async deleteCart(cartId: string): Promise<void> {
     try {
       await sql`
         DELETE FROM carts 
@@ -69,13 +64,25 @@ class CartsRepository {
     }
   }
 
-  async getCartByUserId(userId: string): Promise<Cart | undefined> {
+  async getCartByUserId(userID: string): Promise<Cart | undefined> {
     try {
-      const query = await sql<Cart>`SELECT * FROM carts WHERE userID = ${userId} LIMIT 1`;
+      const query = await sql<Cart>`SELECT * FROM carts WHERE userID = ${userID} LIMIT 1`;
       return query.rows[0];
     } catch (error) {
-      console.error(`Failed to fetch cart for user with ID ${userId}:`, error);
-      throw new Error(`Failed to fetch cart for user with ID ${userId}.`);
+      console.error(`Failed to fetch cart for user with ID ${userID}:`, error);
+      throw new Error(`Failed to fetch cart for user with ID ${userID}.`);
+    }
+  }
+
+  async addMercadopagoId(cartId:string,preferenceId:string){
+    try{
+      const query = await sql<Cart>` 
+        UPDATE carts 
+        SET mercadopagoid = ${cartId}, mercadoPagoID = ${preferenceId} 
+        WHERE id = ${cartId}`;
+      return query.rows[0];
+    }catch(err){
+      throw new Error(`Failed to update cart`);
     }
   }
 }

@@ -1,41 +1,56 @@
-
 import Link from 'next/link';
 import AuthButton from './LogoutButton';
-import {  Session } from 'next-auth';
+import { Session } from 'next-auth';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]/auth-config';
 import LogoutButton from './LogoutButton';
 import LoginButton from './LoginButton';
+import CartButton from './dashboard/CartButton';
+import Image from "next/image";
+import HomeButton from './HomeButton';
+import SearchBar from './dashboard/SearchBar';
+import { Fragment } from 'react';
+import BuysRecordButton from './BuysRecordButton';
+import { CursorArrowRippleIcon } from '@heroicons/react/24/outline';
+import { Button } from "@headlessui/react";
 
-const Navbar = async ()=>{
-  const session:Session|null = await getServerSession(authOptions)
-  let AuthButton = (session)? 
-  <LogoutButton></LogoutButton>:
-  <LoginButton></LoginButton>
 
-    return (
-      <div className="bg-gray-800 p-4">
+const NavBar = async () => {
+  const session: Session | null = await getServerSession(authOptions);
+  const AuthButton = session ? (
+    <Fragment>
+      <div className="mr-10">
+        <BuysRecordButton />
+      </div>
+      <div className="mr-10">
+        <LogoutButton />
+      </div>
+    </Fragment>
+  ) : (
+    <LoginButton />
+  );
+
+  return (
+    <div className="bg-gray-800 sticky top-0">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-white text-lg font-bold">
+        <Button className="pt-2 text-sm/5 font-semibold text-gray-100 focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white">
             <Link href="/">
-          </Link>
+                <CursorArrowRippleIcon/>
+                Logo
+            </Link>
+        </Button>
+        <div className="flex items-center">
+          <div className="mr-10">
+            <HomeButton  /> 
+          </div>
+          <div className="mr-10">
+            <CartButton  />
+          </div>
+          {AuthButton}
         </div>
-        <div className="flex items-center w-full max-w-md mx-4">
-          <input 
-            type="text" 
-            className="w-full px-4 py-2 rounded-l-lg focus:outline-none" 
-            placeholder="Search..."
-          />
-          <button 
-            className="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 focus:outline-none"
-          >
-            Search
-          </button>
-        </div>
-        {AuthButton}
       </div>
     </div>
-    )
-}
+  );
+};
 
-export default Navbar;
+export default NavBar;
